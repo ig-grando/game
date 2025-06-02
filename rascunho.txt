@@ -1,0 +1,4 @@
+Para rodar:
+gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 --libs --cflags)
+
+Perguntar ao professor das fontes e dos input do teclado, se é melhor por vetor ou do outro jeito como no menu
