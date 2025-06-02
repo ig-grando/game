@@ -4,9 +4,8 @@
 #include <allegro5/allegro_font.h>																				    //Biblioteca de fontes do Allegro
 #include <allegro5/allegro_primitives.h>																			//Biblioteca de figuras básicas
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_ttf.h>
 
-#define X_SCREEN 1280
-#define Y_SCREEN 720
 
 #define FPS 60.0
 
@@ -39,6 +38,7 @@ int main(){
     init_all(al_install_mouse(), "mouse");
     init_all(al_init_image_addon(), "image_addon");
     init_all(al_init_font_addon(), "font addon");
+    init_all(al_init_ttf_addon(), "ttf addon");
 
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
     init_all(timer, "timer");
@@ -49,9 +49,9 @@ int main(){
     ALLEGRO_FONT *font = al_create_builtin_font();
     init_all(font, "fonte");
 
-    //ALLEGRO_FONT *font_base = al_load_font("fontes/Oswald/static/Oswald-Regular.ttf", 14, 0);
-    //init_all(font_base, "fonte");
-    
+    ALLEGRO_FONT *font_base = al_load_ttf_font("Pixellari.ttf", 30, 0);
+    init_all(font_base, "fonte minha");
+
     ALLEGRO_BITMAP *fundo_menu = al_load_bitmap("usaveis/orig.png");
     init_all(fundo_menu, "usaveis/orig.png");
 
@@ -61,6 +61,12 @@ int main(){
     ALLEGRO_MOUSE_CURSOR *mouse = al_create_mouse_cursor(cursor, 0, 0);
     init_all(mouse, "create_mouse_cursor");
     
+    ALLEGRO_DISPLAY_MODE display_config;
+    al_get_display_mode(0, &display_config);
+
+    long X_SCREEN, Y_SCREEN;
+    X_SCREEN = display_config.width;
+    Y_SCREEN = display_config.height;
     ALLEGRO_DISPLAY *display = al_create_display(X_SCREEN, Y_SCREEN);
     init_all(display, "display");
 
@@ -115,15 +121,15 @@ int main(){
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 switch(tela){
                     case MENU:
-                        if(mouse_no_botao(font, "Iniciar", 450, Y_SCREEN/2, event.mouse.x, event.mouse.y))
+                        if(mouse_no_botao(font_base, "Iniciar", 450, Y_SCREEN/2, event.mouse.x, event.mouse.y))
                             tela = JOGO;
-                        if(mouse_no_botao(font, "Configurações", ((450+830)/2)+8, Y_SCREEN/2, event.mouse.x, event.mouse.y))
+                        if(mouse_no_botao(font_base, "Configurações", ((450+830)/2)+8, Y_SCREEN/2, event.mouse.x, event.mouse.y))
                             tela = CONFIG;
-                        if(mouse_no_botao(font, "Sair", 830, Y_SCREEN/2, event.mouse.x, event.mouse.y))
+                        if(mouse_no_botao(font_base, "Sair", 830, Y_SCREEN/2, event.mouse.x, event.mouse.y))
                             sair = 1;
                     break;
                     case CONFIG:
-                        if(mouse_no_botao(font, "Voltar", X_SCREEN/2, 500, event.mouse.x, event.mouse.y))
+                        if(mouse_no_botao(font_base, "Voltar", X_SCREEN/2, 500, event.mouse.x, event.mouse.y))
                             tela = MENU;
                     break;
                 break;
@@ -139,16 +145,16 @@ int main(){
             switch(tela){
                 case MENU:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_text(font, al_map_rgb(0, 0, 0), 450, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Iniciar");
-                    al_draw_text(font, al_map_rgb(0, 0, 0), ((450+830)/2)+8, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Configurações");
-                    al_draw_text(font, al_map_rgb(0, 0, 0), 830, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Sair");
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), 450, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Iniciar");
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), ((450+830)/2)+8, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Configurações");
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), 830, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Sair");
                     al_flip_display();
                     quadro = 0;
                 break;
 
                 case CONFIG:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_text(font, al_map_rgb(0, 0, 0), X_SCREEN/2, 500, ALLEGRO_ALIGN_CENTER, "VOLTAR");
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, 500, ALLEGRO_ALIGN_CENTER, "VOLTAR");
                     al_flip_display();
                     quadro = 0;
                 break;
@@ -166,7 +172,7 @@ int main(){
     al_destroy_timer(timer);
     al_destroy_mouse_cursor(mouse);
     al_destroy_display(display);
-    al_destroy_font(font);
+    al_destroy_font(font_base);
     al_destroy_bitmap(fundo_menu);
     al_destroy_bitmap(cursor);
     al_destroy_event_queue(fila);
