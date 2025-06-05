@@ -67,6 +67,9 @@ int main(){
     ALLEGRO_BITMAP *fundo3 = al_load_bitmap("usaveis/6.png");
     verifica_init(fundo3, "usaveis/robo_bg.png");
 
+    ALLEGRO_BITMAP *sprite_sheet = al_load_bitmap("usaveis/sprite3.png");
+    verifica_init(sprite_sheet, "usaveis/sprite3.png");
+
     ALLEGRO_BITMAP *cursor = al_load_bitmap("usaveis/cursor.png");
     verifica_init(fundo_menu, "usaveis/cursor.png");
 
@@ -94,6 +97,7 @@ int main(){
     unsigned char quadro=0, sair=0;
     unsigned int tela = MENU; //começa no menu
     unsigned int resolucao = 1;
+    unsigned int sprite = 1;
     bool tela_cheia = 1, aplicar = 0;
     double start_load, delta=1, velocidade = 250, gravidade = 1800, pulo = 700;
     double start_delta = al_get_time();
@@ -129,8 +133,8 @@ int main(){
                 personagem.x += personagem.direcao * velocidade * delta;
                 personagem.y += personagem.velocidade_y * delta;
 
-                if(personagem.y >= Y_SCREEN*0.9){
-                    personagem.y = Y_SCREEN*0.9;
+                if(personagem.y >= Y_SCREEN*0.8){
+                    personagem.y = Y_SCREEN*0.8;
                     personagem.velocidade_y = 0;
                     personagem.chao = 1;
                 }
@@ -243,6 +247,7 @@ int main(){
                 break;
                 case AUDIO:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_scaled_bitmap(sprite_sheet, 8, 8, 16, 24, 500, 500, 100, 100, 0);
                     al_flip_display();
                     quadro = 0;
                 break;
@@ -256,7 +261,10 @@ int main(){
                     al_draw_scaled_bitmap(fundo1, 0, 0, al_get_bitmap_width(fundo1), al_get_bitmap_height(fundo1), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_scaled_bitmap(fundo2, 0, 0, al_get_bitmap_width(fundo2), al_get_bitmap_height(fundo2), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_scaled_bitmap(fundo3, 0, 0, al_get_bitmap_width(fundo3), al_get_bitmap_height(fundo3), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    desenha_boneco(personagem.x, personagem.y);
+                    desenha_boneco(sprite_sheet ,personagem.x, personagem.y, sprite/5, personagem.direcao);
+                    sprite++;
+                    if(sprite >= 20)
+                        sprite = 0;
                     quadro = 0;
                 break;
                 case LOADING:

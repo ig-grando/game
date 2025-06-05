@@ -8,6 +8,8 @@
 
 #include "utils.h"
 
+#define PIXEL 8
+
 void desenha_menu(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN){
     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_text(font_base, al_map_rgb(0, 0, 0), (X_SCREEN*0.25), Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Iniciar");
@@ -46,7 +48,11 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
     al_flip_display();
 }
 
-void desenha_boneco(int x, int y){
-    al_draw_filled_rectangle(x, y, x+15, y+15, al_map_rgb(255, 0, 0));
+void desenha_boneco(ALLEGRO_BITMAP *sprite_sheet, int x, int y, int sprite, int direcao){
+    int ini= PIXEL*2, fim = PIXEL*2;
+    if(direcao >= 0)
+        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, x, y, 70, 140, 0);
+    else
+        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, x, y, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
     al_flip_display();
 }
