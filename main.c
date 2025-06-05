@@ -14,6 +14,7 @@
 #define KEY_SEEN 1 //A tecla foi detectada pelo menos uma vez.
 #define KEY_DOWN 2 //A tecla está mantida pressionada
 
+
 #define MENU 0
 #define CONFIG 1
 #define JOGO 2
@@ -54,8 +55,17 @@ int main(){
     ALLEGRO_BITMAP *check = al_load_bitmap("usaveis/check.png");
     verifica_init(check, "usaveis/check.png");
 
-    ALLEGRO_BITMAP *fundo = al_load_bitmap("usaveis/robo_bg.png");
-    verifica_init(fundo, "usaveis/robo_bg.png");
+    ALLEGRO_BITMAP *fundo0 = al_load_bitmap("usaveis/1.png");
+    verifica_init(fundo0, "usaveis/robo_bg.png");
+
+    ALLEGRO_BITMAP *fundo1 = al_load_bitmap("usaveis/2.png");
+    verifica_init(fundo1, "usaveis/robo_bg.png");
+
+    ALLEGRO_BITMAP *fundo2 = al_load_bitmap("usaveis/4.png");
+    verifica_init(fundo2, "usaveis/robo_bg.png");
+
+    ALLEGRO_BITMAP *fundo3 = al_load_bitmap("usaveis/6.png");
+    verifica_init(fundo3, "usaveis/robo_bg.png");
 
     ALLEGRO_BITMAP *cursor = al_load_bitmap("usaveis/cursor.png");
     verifica_init(fundo_menu, "usaveis/cursor.png");
@@ -74,28 +84,58 @@ int main(){
     al_register_event_source(fila, al_get_display_event_source(display));
     al_register_event_source(fila, al_get_timer_event_source(timer));
 
-    ALLEGRO_EVENT event;
     al_start_timer(timer);
-
+    
+    ALLEGRO_EVENT event;
+    struct boneco personagem;
+    personagem.x = personagem.y = 500;
+    personagem.chao = 1;
+    personagem.velocidade_y = 0;
     unsigned char quadro=0, sair=0;
     unsigned int tela = MENU; //começa no menu
     unsigned int resolucao = 1;
     bool tela_cheia = 1, aplicar = 0;
+    double start_load, delta=1, velocidade = 250, gravidade = 1800, pulo = 700;
+    double start_delta = al_get_time();
     unsigned char key[ALLEGRO_KEY_MAX]; //um indice do vetor para cada tecla, com máximo para todos as keys do Allegro
     memset(key, 0, sizeof(key)); //coloca 0 em todo o vetor
     while(1){
         al_wait_for_event(fila, &event);
         switch(event.type){
             case ALLEGRO_EVENT_TIMER:
-                /*if(key[ALLEGRO_KEY_W])
-                if(key[ALLEGRO_KEY_S])
+                //if(key[ALLEGRO_KEY_W])
+                    //personagem.y -= (velocidade * delta);
+                //if(key[ALLEGRO_KEY_S])
+                    //personagem.y += (velocidade * delta);
+                personagem.direcao = 0;
                 if(key[ALLEGRO_KEY_A])
+                    personagem.direcao -= 1;
                 if(key[ALLEGRO_KEY_D])
-                if(key[ALLEGRO_KEY_ESCAPE])*/
+                    personagem.direcao += 1;
+                if(key[ALLEGRO_KEY_SPACE] && personagem.chao){
+                    personagem.velocidade_y = -pulo;
+                    personagem.chao = 0;
+                }
                 for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
                     key[i] &= ~KEY_SEEN; //&= faz a operação AND e ~faz um NOT, O resultado remove KEY_SEEN, mas mantém se KEY_DOWN.
                 quadro = 1;
+                double now_delta = al_get_time();
+                delta = now_delta - start_delta;
+                start_delta = now_delta;
+
+                if(!personagem.chao)
+                    personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
+
+                personagem.x += personagem.direcao * velocidade * delta;
+                personagem.y += personagem.velocidade_y * delta;
+
+                if(personagem.y >= Y_SCREEN*0.9){
+                    personagem.y = Y_SCREEN*0.9;
+                    personagem.velocidade_y = 0;
+                    personagem.chao = 1;
+                }
             break;
+
             case ALLEGRO_EVENT_KEY_DOWN:
                 key[event.keyboard.keycode] = KEY_SEEN | KEY_DOWN; //faz operação OU bit a bit, então ambos estão ativos (vista e pressionada)
                 //colocar um if se estiver no game para dar
@@ -120,6 +160,9 @@ int main(){
                             case JOGO:
                                 tela = CONFIG;
                             break;
+                            case LOADING:
+                                tela = MENU;
+                            break;
                         }
                     break;
                 }
@@ -130,8 +173,10 @@ int main(){
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 switch(tela){
                     case MENU:
-                        if(mouse_no_botao(font_base, "Iniciar", (X_SCREEN*0.25), Y_SCREEN/2, event.mouse.x, event.mouse.y))
-                            tela = JOGO;
+                        if(mouse_no_botao(font_base, "Iniciar", (X_SCREEN*0.25), Y_SCREEN/2, event.mouse.x, event.mouse.y)){
+                            start_load = al_get_time();
+                            tela = LOADING;
+                        }
                         if(mouse_no_botao(font_base, "Configurações", (X_SCREEN*0.50), Y_SCREEN/2, event.mouse.x, event.mouse.y))
                             tela = CONFIG;
                         if(mouse_no_botao(font_base, "Sair", (X_SCREEN*0.75), Y_SCREEN/2, event.mouse.x, event.mouse.y))
@@ -207,8 +252,19 @@ int main(){
                     quadro = 0;
                 break;
                 case JOGO:
-                    //al_draw_scaled_bitmap(fundo, 0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
-                    //0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_scaled_bitmap(fundo1, 0, 0, al_get_bitmap_width(fundo1), al_get_bitmap_height(fundo1), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_scaled_bitmap(fundo2, 0, 0, al_get_bitmap_width(fundo2), al_get_bitmap_height(fundo2), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_scaled_bitmap(fundo3, 0, 0, al_get_bitmap_width(fundo3), al_get_bitmap_height(fundo3), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    desenha_boneco(personagem.x, personagem.y);
+                    quadro = 0;
+                break;
+                case LOADING:
+                    double now_load = al_get_time();
+                    if(now_load - start_load >= 1.5)
+                        tela = JOGO;
+                    al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Carregando...");
                     al_flip_display();
                     quadro = 0;
                 break;
@@ -224,7 +280,10 @@ int main(){
     al_destroy_font(font_base);
     al_destroy_bitmap(fundo_menu);
     al_destroy_bitmap(check);
-    al_destroy_bitmap(fundo);
+    al_destroy_bitmap(fundo0);
+    al_destroy_bitmap(fundo1);
+    al_destroy_bitmap(fundo2);
+    al_destroy_bitmap(fundo3);
     al_destroy_bitmap(cursor);
     al_destroy_event_queue(fila);
     return 0;

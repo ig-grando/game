@@ -6,7 +6,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 
-#include "utils.c"
+#include "utils.h"
+
 void desenha_menu(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN){
     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_text(font_base, al_map_rgb(0, 0, 0), (X_SCREEN*0.25), Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Iniciar");
@@ -42,5 +43,10 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
     if(resolucao == 1) al_draw_bitmap(check, coord1.x, coord1.y, 0);
     if(resolucao == 2) al_draw_bitmap(check, coord2.x, coord2.y, 0);
     if(tela_cheia == 1) al_draw_bitmap(check, coord3.x, coord3.y, 0);
+    al_flip_display();
+}
+
+void desenha_boneco(int x, int y){
+    al_draw_filled_rectangle(x, y, x+15, y+15, al_map_rgb(255, 0, 0));
     al_flip_display();
 }

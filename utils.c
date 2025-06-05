@@ -6,15 +6,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 
-struct coordenada{
-    int x;
-    int y;
-};
-
-struct tela{
-    int X_SCREEN;
-    int Y_SCREEN;
-};
+#include "utils.h"
 
 void verifica_init(bool flag, const char *string){
     if(!flag){
