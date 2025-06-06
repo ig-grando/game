@@ -94,6 +94,7 @@ int main(){
     personagem.x = personagem.y = 500;
     personagem.chao = 1;
     personagem.velocidade_y = 0;
+    personagem.abaixado = 0;
     unsigned char quadro=0, sair=0;
     unsigned int tela = MENU; //começa no menu
     unsigned int resolucao = 1;
@@ -107,15 +108,22 @@ int main(){
         al_wait_for_event(fila, &event);
         switch(event.type){
             case ALLEGRO_EVENT_TIMER:
+                personagem.abaixado = 0;
+                personagem.direcao = 0;
                 //if(key[ALLEGRO_KEY_W])
                     //personagem.y -= (velocidade * delta);
                 //if(key[ALLEGRO_KEY_S])
-                    //personagem.y += (velocidade * delta);
-                personagem.direcao = 0;
-                if(key[ALLEGRO_KEY_A])
+                    //personagem.abaixado = 1;
+                if(key[ALLEGRO_KEY_A]){
                     personagem.direcao -= 1;
-                if(key[ALLEGRO_KEY_D])
+                    personagem.lado = personagem.direcao;
+                }
+                if(key[ALLEGRO_KEY_D]){
                     personagem.direcao += 1;
+                    personagem.lado = personagem.direcao;
+                }
+                if(key[ALLEGRO_KEY_LCTRL])
+                    personagem.abaixado = 1;
                 if(key[ALLEGRO_KEY_SPACE] && personagem.chao){
                     personagem.velocidade_y = -pulo;
                     personagem.chao = 0;
@@ -124,13 +132,12 @@ int main(){
                     key[i] &= ~KEY_SEEN; //&= faz a operação AND e ~faz um NOT, O resultado remove KEY_SEEN, mas mantém se KEY_DOWN.
                 quadro = 1;
                 double now_delta = al_get_time();
-                delta = now_delta - start_delta;
+                delta = now_delta - start_delta; //tempo em segundos de um quadro a outro IRL, independe do FPS
                 start_delta = now_delta;
 
-                if(!personagem.chao)
-                    personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
-
-                personagem.x += personagem.direcao * velocidade * delta;
+                if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
+                if(personagem.abaixado) personagem.x += personagem.direcao * velocidade/2 * delta;
+                else personagem.x += personagem.direcao * velocidade * delta;
                 personagem.y += personagem.velocidade_y * delta;
 
                 if(personagem.y >= Y_SCREEN*0.8){
@@ -247,7 +254,6 @@ int main(){
                 break;
                 case AUDIO:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_scaled_bitmap(sprite_sheet, 8, 8, 16, 24, 500, 500, 100, 100, 0);
                     al_flip_display();
                     quadro = 0;
                 break;
@@ -261,7 +267,21 @@ int main(){
                     al_draw_scaled_bitmap(fundo1, 0, 0, al_get_bitmap_width(fundo1), al_get_bitmap_height(fundo1), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_scaled_bitmap(fundo2, 0, 0, al_get_bitmap_width(fundo2), al_get_bitmap_height(fundo2), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_scaled_bitmap(fundo3, 0, 0, al_get_bitmap_width(fundo3), al_get_bitmap_height(fundo3), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    desenha_boneco(sprite_sheet ,personagem.x, personagem.y, sprite/5, personagem.direcao);
+                    if(!personagem.chao)
+                        desenha_boneco_pulando(sprite_sheet, personagem);
+                    else{
+                        if(personagem.direcao){
+                            if(personagem.abaixado)
+                                desenha_boneco_abaixado_andando(sprite_sheet, personagem, sprite/5);
+                            else
+                                desenha_boneco_andando(sprite_sheet, personagem, sprite/5);
+                        }
+                        else
+                            if(personagem.abaixado)
+                                desenha_boneco_abaixado(sprite_sheet, personagem);
+                            else
+                                desenha_boneco_parado(sprite_sheet, personagem);
+                    }
                     sprite++;
                     if(sprite >= 20)
                         sprite = 0;
@@ -288,6 +308,7 @@ int main(){
     al_destroy_font(font_base);
     al_destroy_bitmap(fundo_menu);
     al_destroy_bitmap(check);
+    al_destroy_bitmap(sprite_sheet);
     al_destroy_bitmap(fundo0);
     al_destroy_bitmap(fundo1);
     al_destroy_bitmap(fundo2);

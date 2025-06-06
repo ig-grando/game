@@ -1,4 +1,6 @@
 Para rodar:
 gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 --libs --cflags) -lallegro_font -lallegro_ttf
 
-Perguntar ao professor das fontes e dos input do teclado, se é melhor por vetor ou do outro jeito como no menu
+Deenhar a arma, o boneco abaixando e pulando.
+
+Desenhei a arma, faço ela mexer ou não?
