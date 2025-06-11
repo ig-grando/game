@@ -25,6 +25,13 @@ struct tela{
     int Y_SCREEN;
 };
 
+struct fundo{
+    ALLEGRO_BITMAP *bitmap;
+    int x_screen;
+    int scroll_x;
+    int scroll_offset;
+};
+
 void verifica_init(bool flag, const char *string);
 
 void init_basico();

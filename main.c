@@ -31,6 +31,7 @@ int main(){
     
     int X_SCREEN, Y_SCREEN;
     struct tela t;
+    struct fundo fundo1, fundo2, fundo3;
     ALLEGRO_DISPLAY *display = NULL;
     display = configura_display(display, 0, 0);
     t = dimensoes();
@@ -58,14 +59,14 @@ int main(){
     ALLEGRO_BITMAP *fundo0 = al_load_bitmap("usaveis/1.png");
     verifica_init(fundo0, "usaveis/robo_bg.png");
 
-    ALLEGRO_BITMAP *fundo1 = al_load_bitmap("usaveis/2.png");
-    verifica_init(fundo1, "usaveis/robo_bg.png");
+    fundo1.bitmap = al_load_bitmap("usaveis/2.png");
+    verifica_init(fundo1.bitmap, "usaveis/2.png");
 
-    ALLEGRO_BITMAP *fundo2 = al_load_bitmap("usaveis/4.png");
-    verifica_init(fundo2, "usaveis/robo_bg.png");
+    fundo2.bitmap = al_load_bitmap("usaveis/4.png");
+    verifica_init(fundo2.bitmap, "usaveis/4.png");
 
-    ALLEGRO_BITMAP *fundo3 = al_load_bitmap("usaveis/6.png");
-    verifica_init(fundo3, "usaveis/robo_bg.png");
+    fundo3.bitmap = al_load_bitmap("usaveis/6.png");
+    verifica_init(fundo3.bitmap, "usaveis/6.png");
 
     ALLEGRO_BITMAP *sprite_sheet = al_load_bitmap("usaveis/sprite3.png");
     verifica_init(sprite_sheet, "usaveis/sprite3.png");
@@ -95,6 +96,8 @@ int main(){
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.abaixado = 0;
+    int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
+    scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
     unsigned char quadro=0, sair=0;
     unsigned int tela = MENU; //começa no menu
     unsigned int resolucao = 1;
@@ -136,10 +139,28 @@ int main(){
                 start_delta = now_delta;
 
                 if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
-                if(personagem.abaixado) personagem.x += personagem.direcao * velocidade/2 * delta;
-                else personagem.x += personagem.direcao * velocidade * delta;
+                if(personagem.abaixado){
+                    personagem.x += personagem.direcao * velocidade/2 * delta;
+                    fundo3.scroll_x -= personagem.direcao * velocidade * delta/2;
+                    fundo2.scroll_x -= personagem.direcao * velocidade * delta/4;
+                    fundo1.scroll_x -= personagem.direcao * velocidade * delta/8;
+                    //scroll_X4 -= personagem.direcao * velocidade * delta/16;
+                } 
+                else{
+                    personagem.x += personagem.direcao * velocidade * delta;
+                    fundo3.scroll_x -= personagem.direcao * velocidade * delta;
+                    fundo2.scroll_x -= personagem.direcao * velocidade * delta/2;
+                    fundo1.scroll_x -= personagem.direcao * velocidade * delta/4;
+                    //scroll_X4 -= personagem.direcao * velocidade * delta/8;
+                } 
+                if(personagem.x > X_SCREEN/2) personagem.x = X_SCREEN/2;
+                else if(personagem.x <= 0)personagem.x = 0;
                 personagem.y += personagem.velocidade_y * delta;
 
+                //printf("XCROLL: %d\n", scroll_X);
+                if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
+                //else if(scroll_X >= X_SCREEN) scroll_X -= X_SCREEN;
+                
                 if(personagem.y >= Y_SCREEN*0.8){
                     personagem.y = Y_SCREEN*0.8;
                     personagem.velocidade_y = 0;
@@ -263,25 +284,7 @@ int main(){
                     quadro = 0;
                 break;
                 case JOGO:
-                    al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_scaled_bitmap(fundo1, 0, 0, al_get_bitmap_width(fundo1), al_get_bitmap_height(fundo1), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_scaled_bitmap(fundo2, 0, 0, al_get_bitmap_width(fundo2), al_get_bitmap_height(fundo2), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_scaled_bitmap(fundo3, 0, 0, al_get_bitmap_width(fundo3), al_get_bitmap_height(fundo3), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    if(!personagem.chao)
-                        desenha_boneco_pulando(sprite_sheet, personagem);
-                    else{
-                        if(personagem.direcao){
-                            if(personagem.abaixado)
-                                desenha_boneco_abaixado_andando(sprite_sheet, personagem, sprite/5);
-                            else
-                                desenha_boneco_andando(sprite_sheet, personagem, sprite/5);
-                        }
-                        else
-                            if(personagem.abaixado)
-                                desenha_boneco_abaixado(sprite_sheet, personagem);
-                            else
-                                desenha_boneco_parado(sprite_sheet, personagem);
-                    }
+                    desenha_jogo(personagem, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
                     sprite++;
                     if(sprite >= 20)
                         sprite = 0;
@@ -310,9 +313,9 @@ int main(){
     al_destroy_bitmap(check);
     al_destroy_bitmap(sprite_sheet);
     al_destroy_bitmap(fundo0);
-    al_destroy_bitmap(fundo1);
-    al_destroy_bitmap(fundo2);
-    al_destroy_bitmap(fundo3);
+    al_destroy_bitmap(fundo1.bitmap);
+    al_destroy_bitmap(fundo2.bitmap);
+    al_destroy_bitmap(fundo3.bitmap);
     al_destroy_bitmap(cursor);
     al_destroy_event_queue(fila);
     return 0;
