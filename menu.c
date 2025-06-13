@@ -12,12 +12,20 @@
 #define PIXEL 8
 
 
-/*void desenha_arma(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite, int flag){
-    ALLEGRO_BIT
+void desenha_arma_rotacionada(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite, int flag){
     int ini= PIXEL*2;
     int ini2 = PIXEL*31;
-    al_draw_scaled_rotated_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0)
-}*/
+
+    ALLEGRO_BITMAP *arma_sprite = al_create_sub_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini2, PIXEL*3, PIXEL*2);
+    float cx = (PIXEL * 3) / 2.0; //Define centro do sprite (para rotacionar no meio)
+    float cy = (PIXEL * 2) / 2.0;
+    float escala_x = 105.0 / (PIXEL * 3); //Escalas desejadas
+    float escala_y = 70.0 / (PIXEL * 2);
+    int angulo_graus = 0;
+    float radianos = angulo_graus * (ALLEGRO_PI / 180.0);
+    al_draw_scaled_rotated_bitmap(arma_sprite, cx, cy, personagem.x+7*PIXEL, personagem.y+8*PIXEL, escala_x, escala_y, radianos, flag); 
+    al_destroy_bitmap(arma_sprite);
+}
 
 void desenha_boneco_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite){
     int ini= PIXEL*2;
@@ -25,7 +33,7 @@ void desenha_boneco_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     if(personagem.lado >= 0){
         al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, 0);
         if(personagem.atirando)
-            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
+            desenha_arma_rotacionada(sprite_sheet, personagem, sprite, 0);
             
         else
             al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
@@ -37,7 +45,7 @@ void desenha_boneco_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
         else
             al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
-    al_flip_display();
+    
 }
 
 void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite){
@@ -58,7 +66,7 @@ void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personage
         else
             al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
-    al_flip_display();
+    
 }
 
 void desenha_boneco_abaixado_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite){
@@ -72,7 +80,7 @@ void desenha_boneco_abaixado_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco
         al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
         al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-5*PIXEL, personagem.y+ 5*PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
-    al_flip_display();
+    
 }
 
 void desenha_boneco_abaixado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem){
@@ -86,7 +94,7 @@ void desenha_boneco_abaixado(ALLEGRO_BITMAP *sprite_sheet, struct boneco persona
         al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
         al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-5*PIXEL, personagem.y+ 5*PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
-    al_flip_display();
+    
 }
 
 void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem){
@@ -103,7 +111,7 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
         else al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
         al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
         }
-    al_flip_display();
+    
 }
 
 
@@ -113,7 +121,7 @@ void desenha_menu(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SC
     al_draw_text(font_base, al_map_rgb(0, 0, 0), (X_SCREEN*0.25), Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Iniciar");
     al_draw_text(font_base, al_map_rgb(0, 0, 0), (X_SCREEN*0.5), Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Configurações");
     al_draw_text(font_base, al_map_rgb(0, 0, 0), (X_SCREEN*0.75), Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Sair");
-    al_flip_display();
+    
 }
 
 void desenha_config(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN){
@@ -122,7 +130,7 @@ void desenha_config(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_
     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.40, ALLEGRO_ALIGN_CENTER, "Audio");
     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.45, ALLEGRO_ALIGN_CENTER, "Controle");
     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.60, ALLEGRO_ALIGN_CENTER, "Voltar");
-    al_flip_display();
+    
 }
 
 void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN, unsigned int resolucao, unsigned int tela_cheia){
@@ -143,7 +151,7 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
     if(resolucao == 1) al_draw_bitmap(check, coord1.x, coord1.y, 0);
     if(resolucao == 2) al_draw_bitmap(check, coord2.x, coord2.y, 0);
     if(tela_cheia == 1) al_draw_bitmap(check, coord3.x, coord3.y, 0);
-    al_flip_display();
+    
 }
 
 void desenha_jogo(struct boneco personagem, struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, unsigned int sprite, int X_SCREEN, int Y_SCREEN){
@@ -178,6 +186,5 @@ void desenha_jogo(struct boneco personagem, struct fundo fundo1, struct fundo fu
             else
                 desenha_boneco_parado(sprite_sheet, personagem, sprite/5);
     }
-    
 }
 

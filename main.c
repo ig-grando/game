@@ -137,7 +137,7 @@ int main(){
                 double now_delta = al_get_time();
                 delta = now_delta - start_delta; //tempo em segundos de um quadro a outro IRL, independe do FPS
                 start_delta = now_delta;
-
+//printf("FPS: %f\n", 1.0/delta);
                 if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
                 if(personagem.abaixado){
                     personagem.x += personagem.direcao * velocidade/2 * delta;
@@ -264,35 +264,28 @@ int main(){
     aplicar = 0;
         }
         if(quadro && al_is_event_queue_empty(fila)){
+            al_clear_to_color(al_map_rgb(0, 0, 0));
             switch(tela){
                 case MENU:
                     desenha_menu(fundo_menu, font_base, X_SCREEN, Y_SCREEN);
-                    quadro = 0;
                 break;
                 case CONFIG:
                     desenha_config(fundo_menu, font_base, X_SCREEN, Y_SCREEN);
-                    quadro = 0;
                 break;
                 case VIDEO:
                     desenha_video(fundo_menu, check, font_base, X_SCREEN, Y_SCREEN, resolucao, tela_cheia);
-                    quadro = 0;
                 break;
                 case AUDIO:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_flip_display();
-                    quadro = 0;
                 break;
                 case CONTROLE:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_flip_display();
-                    quadro = 0;
                 break;
                 case JOGO:
                     desenha_jogo(personagem, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
                     sprite++;
                     if(sprite >= 20)
                         sprite = 0;
-                    quadro = 0;
                 break;
                 case LOADING:
                     double now_load = al_get_time();
@@ -300,10 +293,10 @@ int main(){
                         tela = JOGO;
                     al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Carregando...");
-                    al_flip_display();
-                    quadro = 0;
                 break;
             }
+            al_flip_display();
+            quadro = 0;
             //al_clear_to_color(al_map_rgb(0, 0, 0));
             
         }
