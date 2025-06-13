@@ -95,7 +95,7 @@ int main(){
     personagem.x = personagem.y = 500;
     personagem.chao = 1;
     personagem.velocidade_y = 0;
-    personagem.abaixado = 0;
+    personagem.atirando = 0;
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
     unsigned char quadro=0, sair=0;
@@ -238,13 +238,17 @@ int main(){
                         if(mouse_no_botao(font_base, "Voltar", X_SCREEN*0.55, Y_SCREEN*0.60, event.mouse.x, event.mouse.y))
                             tela = CONFIG;
                     break;
-                break;
-                }
-                
-                break;
+                    case JOGO:
+                        personagem.atirando = 1;
+                    break;
+                }      
+            break;
+            case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+                if(tela == JOGO) personagem.atirando = 0;
+            break;
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 sair = 1;
-                break;
+            break;
         }
         if(sair) break; //sai do loop se clicar para fechar ou apertar esq
         if(aplicar == 1){

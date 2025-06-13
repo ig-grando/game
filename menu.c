@@ -12,32 +12,51 @@
 #define PIXEL 8
 
 
-
+/*void desenha_arma(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite, int flag){
+    ALLEGRO_BIT
+    int ini= PIXEL*2;
+    int ini2 = PIXEL*31;
+    al_draw_scaled_rotated_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0)
+}*/
 
 void desenha_boneco_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite){
     int ini= PIXEL*2;
-    int ini2 = PIXEL*35;
+    int ini2 = PIXEL*31;
     if(personagem.lado >= 0){
         al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, 0);
-        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
+        if(personagem.atirando)
+            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
+            
+        else
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
     }
     else{
         al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        if(personagem.atirando)
+            al_draw_scaled_bitmap(sprite_sheet,  sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        else
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     al_flip_display();
 }
 
-void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem){
+void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite){
     int ini= PIXEL*2;
     int ini2 = PIXEL*31;
     if(personagem.lado >= 0){
         al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, 0);
-        al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
+        if(personagem.atirando)
+            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
+        else
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y+4 * PIXEL, 105, 70, 0);
+            
     }
     else{
         al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        if(personagem.atirando)
+            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        else
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     al_flip_display();
 }
@@ -129,7 +148,7 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
 
 void desenha_jogo(struct boneco personagem, struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, unsigned int sprite, int X_SCREEN, int Y_SCREEN){
     fundo1.scroll_offset = fundo1.scroll_x % X_SCREEN;
-    if (fundo1.scroll_offset > 0) fundo1.scroll_offset -= X_SCREEN;
+    if (fundo1.scroll_offset > 0) fundo1.scroll_offset -= X_SCREEN; //Corrige casos em que o resto é positivo, garantindo que o offset seja sempre negativo, para quando andar para esquerda
     fundo2.scroll_offset = fundo2.scroll_x % X_SCREEN;
     if (fundo2.scroll_offset > 0) fundo2.scroll_offset -= X_SCREEN;
     fundo3.scroll_offset = fundo3.scroll_x % X_SCREEN;
@@ -157,7 +176,7 @@ void desenha_jogo(struct boneco personagem, struct fundo fundo1, struct fundo fu
             if(personagem.abaixado)
                 desenha_boneco_abaixado(sprite_sheet, personagem);
             else
-                desenha_boneco_parado(sprite_sheet, personagem);
+                desenha_boneco_parado(sprite_sheet, personagem, sprite/5);
     }
     
 }
