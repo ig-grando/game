@@ -16,6 +16,7 @@ struct boneco{
     int velocidade_y;
     int direcao;
     int lado;
+    int angulo;
     bool abaixado;
     bool chao;
     bool atirando;

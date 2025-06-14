@@ -8,6 +8,7 @@
 
 #include "utils.c"
 #include "menu.c"
+#include "tiro.c"
 
 #define FPS 60.0
 
@@ -96,6 +97,10 @@ int main(){
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.atirando = 0;
+
+    struct arma *gun;
+    gun = inicia_arma();
+    struct bala *bullet_aux;
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
     unsigned char quadro=0, sair=0;
@@ -105,8 +110,10 @@ int main(){
     bool tela_cheia = 1, aplicar = 0;
     double start_load, delta=1, velocidade = 250, gravidade = 1800, pulo = 700;
     double start_delta = al_get_time();
+
     unsigned char key[ALLEGRO_KEY_MAX]; //um indice do vetor para cada tecla, com máximo para todos as keys do Allegro
     memset(key, 0, sizeof(key)); //coloca 0 em todo o vetor
+
     while(1){
         al_wait_for_event(fila, &event);
         switch(event.type){
@@ -284,8 +291,13 @@ int main(){
                 case JOGO:
                     desenha_jogo(personagem, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
                     sprite++;
-                    if(sprite >= 20)
-                        sprite = 0;
+                    if(sprite >= 20) sprite = 0;
+                    gun->cooldown -= delta;
+                    if(personagem.atirando && gun->cooldown <= 0){
+                        atirou(personagem, gun);
+                    }
+                    desenha_bala(gun);
+                    atualiza_lista(gun, velocidade*delta*5, X_SCREEN, Y_SCREEN);
                 break;
                 case LOADING:
                     double now_load = al_get_time();
@@ -302,6 +314,7 @@ int main(){
         }
     }
 
+    destroi_arma(gun);
     al_destroy_timer(timer);
     al_destroy_mouse_cursor(mouse);
     al_destroy_display(display);

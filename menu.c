@@ -8,6 +8,7 @@
 
 #include "menu.h"
 #include "utils.h"
+#include "tiro.h"
 
 #define PIXEL 8
 
@@ -114,7 +115,17 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     
 }
 
-
+void desenha_bala(struct arma *gun){
+    struct bala *bullet;
+    if(!gun->primeira_bala) return;
+    bullet = gun->primeira_bala;
+    while(bullet != NULL){
+        int x = bullet->x;
+        int y = bullet->y;
+        al_draw_filled_rectangle(x, y, x+10, y+4, al_map_rgb(255, 125, 250));
+        bullet = bullet->proxima;
+    }
+}
 
 void desenha_menu(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN){
     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
