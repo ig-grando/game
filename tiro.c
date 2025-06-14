@@ -37,7 +37,7 @@ struct bala *inicia_bala(int x, int y, int angulo){
 }
 
 void atirou(struct boneco personagem, struct arma *gun){
-    struct bala *bullet = inicia_bala(personagem.x, personagem.y, 0);//trocar 0 por persongem.angulo depois
+    struct bala *bullet = inicia_bala(personagem.x+20, personagem.y-35, personagem.angulo);//trocar 0 por persongem.angulo depois
     if(!gun->primeira_bala){
         gun->primeira_bala = bullet;
         gun->ultima_bala = bullet;
@@ -51,8 +51,8 @@ void atirou(struct boneco personagem, struct arma *gun){
 
 
 void avança_bala(struct bala *bullet, int velocidade){
-    bullet->x += cos(bullet->angulo) * velocidade;
-    bullet->y += sin(bullet->angulo) * velocidade;
+    bullet->x += (cos(bullet->angulo * (ALLEGRO_PI / 180.0))) * velocidade;
+    bullet->y += (sin(bullet->angulo * (ALLEGRO_PI / 180.0))) * velocidade;
 }
 
 void atualiza_lista(struct arma *gun, int velocidade, int X_SCREEN, int Y_SCREEN){
