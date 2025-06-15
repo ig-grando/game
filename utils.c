@@ -79,3 +79,24 @@ void desenha_retangulo_option(ALLEGRO_FONT *fonte, const char *texto, int x, int
     coord->y = y1;
     al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(0, 0, 0), 3);
 }
+
+bool colide_x(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio) {
+    int personagem_direita = personagem_x + largura;
+    int personagem_topo = personagem_y - altura;
+
+    return (personagem_x < predio.x2 &&
+           personagem_direita > predio.x1 &&
+           personagem_y > predio.y1 &&
+           personagem_topo < predio.y2);
+}
+
+
+bool colide_y(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio) {
+    int personagem_direita = personagem_x + largura;
+    int personagem_topo = personagem_y - altura;
+
+    return (personagem_x < predio.x2 &&
+           personagem_direita > predio.x1 &&
+           personagem_y >= predio.y1 &&
+           personagem_topo <= predio.y2); //o sinal de igual resolve travar na plataforma
+}

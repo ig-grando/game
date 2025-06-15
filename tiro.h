@@ -17,6 +17,7 @@ struct bala{
 };
 
 
+
 struct arma *inicia_arma();
 
 struct bala *inicia_bala(int x, int y, int angulo);

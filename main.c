@@ -15,6 +15,10 @@
 #define KEY_SEEN 1 //A tecla foi detectada pelo menos uma vez.
 #define KEY_DOWN 2 //A tecla está mantida pressionada
 
+#define MAX_OBSTACULOS 20
+
+#define LARGURA_PERSONAGEM 67
+#define ALTURA_PERSONAGEM 87
 
 #define MENU 0
 #define CONFIG 1
@@ -100,10 +104,17 @@ int main(){
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.atirando = 0;
-
+    int prox_x, prox_y;
     struct arma *gun;
     gun = inicia_arma();
     //struct bala *bullet_aux;
+
+    struct obstacle estruturas[MAX_OBSTACULOS];
+    estruturas[0].x1 = 500;
+    estruturas[0].y1 = Y_SCREEN*0.7;
+    estruturas[0].x2 = 600;
+    estruturas[0].y2 = Y_SCREEN;
+
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
     unsigned char quadro=0, sair=0;
@@ -121,67 +132,86 @@ int main(){
         al_wait_for_event(fila, &event);
         switch(event.type){
             case ALLEGRO_EVENT_TIMER:
-                personagem.abaixado = 0;
-                personagem.direcao = 0;
-                if(key[ALLEGRO_KEY_W])
-                        personagem.angulo = 270;
-                if(key[ALLEGRO_KEY_S])
-                        personagem.angulo = 90;
-                if(key[ALLEGRO_KEY_A]){
-                    personagem.direcao -= 1;
-                    personagem.lado = personagem.direcao;
-                    personagem.angulo = 180;
+                if(tela ==  JOGO){
+                    personagem.abaixado = 0;
+                    personagem.direcao = 0;
                     if(key[ALLEGRO_KEY_W])
-                        personagem.angulo = 225;
+                            personagem.angulo = 270;
                     if(key[ALLEGRO_KEY_S])
-                        personagem.angulo = 135;
-                }
-                if(key[ALLEGRO_KEY_D]){
-                    personagem.direcao += 1;
-                    personagem.lado = personagem.direcao;
-                    personagem.angulo = 0;
-                    if(key[ALLEGRO_KEY_W])
-                        personagem.angulo = 315;
-                    if(key[ALLEGRO_KEY_S])
-                        personagem.angulo = 45;
-                }
-                if(key[ALLEGRO_KEY_LCTRL])
-                    personagem.abaixado = 1;
-                if(key[ALLEGRO_KEY_SPACE] && personagem.chao){
-                    personagem.velocidade_y = -pulo;
-                    personagem.chao = 0;
+                            personagem.angulo = 90;
+                    if(key[ALLEGRO_KEY_A]){
+                        personagem.direcao -= 1;
+                        personagem.lado = personagem.direcao;
+                        personagem.angulo = 180;
+                        if(key[ALLEGRO_KEY_W])
+                            personagem.angulo = 225;
+                        if(key[ALLEGRO_KEY_S])
+                            personagem.angulo = 135;
+                    }
+                    if(key[ALLEGRO_KEY_D]){
+                        personagem.direcao += 1;
+                        personagem.lado = personagem.direcao;
+                        personagem.angulo = 0;
+                        if(key[ALLEGRO_KEY_W])
+                            personagem.angulo = 315;
+                        if(key[ALLEGRO_KEY_S])
+                            personagem.angulo = 45;
+                    }
+                    if(key[ALLEGRO_KEY_LCTRL])
+                        personagem.abaixado = 1;
+                    if(key[ALLEGRO_KEY_SPACE] && personagem.chao){
+                        personagem.velocidade_y = -pulo;
+                        personagem.chao = 0;
+                    }
+                    if(personagem.abaixado){
+                        prox_x = personagem.x + personagem.direcao * velocidade/2 * delta;
+                        if(!colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estruturas[0])){
+                            personagem.x = prox_x;
+                            fundo3.scroll_x -= personagem.direcao * velocidade * delta/2;
+                            fundo2.scroll_x -= personagem.direcao * velocidade * delta/4;
+                            fundo1.scroll_x -= personagem.direcao * velocidade * delta/8;
+                        }
+                    } 
+                    else{
+                        prox_x = personagem.x + personagem.direcao * velocidade * delta;
+                        prox_y =  personagem.y + personagem.velocidade_y * delta;
+                        if(!colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estruturas[0])){
+                            personagem.x = prox_x;
+                            fundo3.scroll_x -= personagem.direcao * velocidade * delta;
+                            fundo2.scroll_x -= personagem.direcao * velocidade * delta/2;
+                            fundo1.scroll_x -= personagem.direcao * velocidade * delta/4;
+                        }
+                        if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estruturas[0])){
+                            if (personagem.velocidade_y > 0){
+                                personagem.chao = 1;
+                                personagem.velocidade_y = 0;
+                                personagem.y = estruturas[0].y1;
+                            }
+                        }
+                        else{
+                            personagem.chao = 0;
+                            personagem.y = prox_y;
+                        }
+                    }
+                    if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
+                    if(personagem.x+LARGURA_PERSONAGEM > X_SCREEN/2) personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
+                    else if(personagem.x <= 0)personagem.x = 0;
+                    //personagem.y += personagem.velocidade_y * delta; 
+                    if(personagem.y >= Y_SCREEN*0.8){
+                        personagem.y = Y_SCREEN*0.8;
+                        personagem.velocidade_y = 0;
+                        personagem.chao = 1;
+                    }
+
+                   if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
                 }
                 for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
-                    key[i] &= ~KEY_SEEN; //&= faz a operação AND e ~faz um NOT, O resultado remove KEY_SEEN, mas mantém se KEY_DOWN.
-                quadro = 1;
-                double now_delta = al_get_time();
-                delta = now_delta - start_delta; //tempo em segundos de um quadro a outro IRL, independe do FPS
-                start_delta = now_delta;
-//printf("FPS: %f\n", 1.0/delta);
-                if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
-                if(personagem.abaixado){
-                    personagem.x += personagem.direcao * velocidade/2 * delta;
-                    fundo3.scroll_x -= personagem.direcao * velocidade * delta/2;
-                    fundo2.scroll_x -= personagem.direcao * velocidade * delta/4;
-                    fundo1.scroll_x -= personagem.direcao * velocidade * delta/8;
-                } 
-                else{
-                    personagem.x += personagem.direcao * velocidade * delta;
-                    fundo3.scroll_x -= personagem.direcao * velocidade * delta;
-                    fundo2.scroll_x -= personagem.direcao * velocidade * delta/2;
-                    fundo1.scroll_x -= personagem.direcao * velocidade * delta/4;
-                } 
-                if(personagem.x > X_SCREEN/2) personagem.x = X_SCREEN/2;
-                else if(personagem.x <= 0)personagem.x = 0;
-                personagem.y += personagem.velocidade_y * delta;
-
-                if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
-                
-                if(personagem.y >= Y_SCREEN*0.8){
-                    personagem.y = Y_SCREEN*0.8;
-                    personagem.velocidade_y = 0;
-                    personagem.chao = 1;
-                }
+                        key[i] &= ~KEY_SEEN; //&= faz a operação AND e ~faz um NOT, O resultado remove KEY_SEEN, mas mantém se KEY_DOWN.
+                    quadro = 1;
+                    double now_delta = al_get_time();
+                    delta = now_delta - start_delta; //tempo em segundos de um quadro a outro IRL, independe do FPS
+                    start_delta = now_delta;
+    //printf("FPS: %f\n", 1.0/delta);
             break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
@@ -299,8 +329,8 @@ int main(){
                 break;
                 case JOGO:
                     desenha_jogo(personagem, gun, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
-                    al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +2, personagem.y+2, al_map_rgb(255, 0, 0)); //marca x, y do boneco
-                    //al_draw_filled_rectangle(500, Y_SCREEN*0.7, 600, Y_SCREEN, al_map_rgb(0, 0, 255)); //predio
+                    al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
+                    al_draw_filled_rectangle(estruturas[0].x1, estruturas[0].y1, estruturas[0].x2, estruturas[0].y2, al_map_rgb(0, 0, 255)); //predio
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;

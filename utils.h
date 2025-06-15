@@ -34,6 +34,13 @@ struct fundo{
     int scroll_offset;
 };
 
+struct obstacle{
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+};
+
 void verifica_init(bool flag, const char *string);
 
 void init_basico();

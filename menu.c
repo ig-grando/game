@@ -24,7 +24,7 @@ void desenha_arma_rotacionada(ALLEGRO_BITMAP *sprite_sheet, struct boneco person
     float escala_y = 70.0 / (PIXEL * 2);
     int angulo_graus = 0;
     float radianos = angulo_graus * (ALLEGRO_PI / 180.0);
-    al_draw_scaled_rotated_bitmap(arma_sprite, cx, cy, personagem.x+7*PIXEL, personagem.y-106+8*PIXEL, escala_x, escala_y, radianos, flag); 
+    al_draw_scaled_rotated_bitmap(arma_sprite, cx, cy, personagem.x+7*PIXEL, personagem.y-108+8*PIXEL, escala_x, escala_y, radianos, flag); 
     al_destroy_bitmap(arma_sprite);
 }
 
@@ -32,19 +32,19 @@ void desenha_boneco_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     int ini= PIXEL*2;
     int ini2 = PIXEL*31;
     if(personagem.lado >= 0){
-        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, 0);
+        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, 0);
         if(personagem.atirando)
             desenha_arma_rotacionada(sprite_sheet, personagem, sprite, 0);
             
         else
-            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-106+4 * PIXEL, 105, 70, 0);
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-108+4 * PIXEL, 105, 70, 0);
     }
     else{
-        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
         if(personagem.atirando)
-            al_draw_scaled_bitmap(sprite_sheet,  sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-106+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_scaled_bitmap(sprite_sheet,  sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-108+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
         else
-            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-106+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-108+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     
 }
@@ -53,19 +53,19 @@ void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personage
     int ini= PIXEL*2;
     int ini2 = PIXEL*31;
     if(personagem.lado >= 0){
-        al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, 0);
+        al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, 0);
         if(personagem.atirando)
-            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-106+4 * PIXEL, 105, 70, 0);
+            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-108+4 * PIXEL, 105, 70, 0);
         else
-            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-106+4 * PIXEL, 105, 70, 0);
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-108+4 * PIXEL, 105, 70, 0);
             
     }
     else{
-        al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
         if(personagem.atirando)
-            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-106+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_scaled_bitmap(sprite_sheet, sprite * 4 *PIXEL + ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-108+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
         else
-            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-106+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-108+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     
 }
@@ -74,12 +74,12 @@ void desenha_boneco_abaixado_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco
     int ini= PIXEL*26;
     int ini2 = PIXEL*31;
     if(personagem.lado >= 0){
-        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, 0);
-        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x+PIXEL, personagem.y-106+ 5*PIXEL, 105, 70, 0);
+        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, 0);
+        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x+PIXEL, personagem.y-108+ 5*PIXEL, 105, 70, 0);
     }
     else{
-        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-5*PIXEL, personagem.y-106+ 5*PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, sprite * 4 * PIXEL + ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-5*PIXEL, personagem.y-108+ 5*PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     
 }
@@ -88,12 +88,12 @@ void desenha_boneco_abaixado(ALLEGRO_BITMAP *sprite_sheet, struct boneco persona
     int ini= PIXEL*26;
     int ini2 = PIXEL*31;
     if(personagem.lado >= 0){
-        al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, 0);
-        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x+PIXEL, personagem.y-106+ 5*PIXEL, 105, 70, 0);
+        al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, 0);
+        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x+PIXEL, personagem.y-108+ 5*PIXEL, 105, 70, 0);
     }
     else{
-        al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-5*PIXEL, personagem.y-106+ 5*PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*2, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-5*PIXEL, personagem.y-108+ 5*PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     
 }
@@ -103,14 +103,14 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     int ini2 = PIXEL*31;
     //printf("Velociade Y: %d\n", personagem.velocidade_y);
     if(personagem.lado >= 0){
-        if(personagem.velocidade_y > 0) al_draw_scaled_bitmap(sprite_sheet, ini + 4*PIXEL, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, 0);
-        else al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, 0);
-        al_draw_scaled_bitmap(sprite_sheet, 2*PIXEL, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-106+4 * PIXEL, 105, 70, 0);
+        if(personagem.velocidade_y > 0) al_draw_scaled_bitmap(sprite_sheet, ini + 4*PIXEL, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, 0);
+        else al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, 0);
+        al_draw_scaled_bitmap(sprite_sheet, 2*PIXEL, ini2, PIXEL*3, PIXEL*2, personagem.x, personagem.y-108+4 * PIXEL, 105, 70, 0);
     }
     else{
-        if(personagem.velocidade_y > 0) al_draw_scaled_bitmap(sprite_sheet, ini + 4*PIXEL, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-        else al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-106, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-106+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+        if(personagem.velocidade_y > 0) al_draw_scaled_bitmap(sprite_sheet, ini + 4*PIXEL, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+        else al_draw_scaled_bitmap(sprite_sheet, ini, PIXEL*10, PIXEL*2, PIXEL*4, personagem.x, personagem.y-108, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_scaled_bitmap(sprite_sheet, PIXEL*2, ini2, PIXEL*3, PIXEL*2, personagem.x-4*PIXEL-4, personagem.y-108+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
         }
     
 }
