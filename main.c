@@ -15,7 +15,7 @@
 #define KEY_SEEN 1 //A tecla foi detectada pelo menos uma vez.
 #define KEY_DOWN 2 //A tecla está mantida pressionada
 
-#define MAX_OBSTACULOS 20
+#define MAX_OBSTACULOS 0
 
 #define LARGURA_PERSONAGEM 67
 #define ALTURA_PERSONAGEM 87
@@ -49,9 +49,6 @@ int main(){
     ALLEGRO_EVENT_QUEUE *fila = al_create_event_queue();
     verifica_init(fila, "fila");
     
-    ALLEGRO_FONT *font = al_create_builtin_font();
-    verifica_init(font, "fonte");
-
     ALLEGRO_FONT *font_base = al_load_ttf_font("fontes/Pixellari.ttf", 30, 0);
     verifica_init(font_base, "fonte minha");
 
@@ -100,6 +97,7 @@ int main(){
     
     ALLEGRO_EVENT event;
     struct boneco personagem;
+    memset(&personagem, 0, sizeof(personagem));
     personagem.x = personagem.y = 500;
     personagem.chao = 1;
     personagem.velocidade_y = 0;
@@ -110,9 +108,9 @@ int main(){
     //struct bala *bullet_aux;
 
     struct obstacle estruturas[MAX_OBSTACULOS];
-    estruturas[0].x1 = 500;
+    estruturas[0].x1 = 2000;
     estruturas[0].y1 = Y_SCREEN*0.7;
-    estruturas[0].x2 = 600;
+    estruturas[0].x2 = 2300;
     estruturas[0].y2 = Y_SCREEN;
 
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
@@ -121,8 +119,10 @@ int main(){
     unsigned int tela = MENU; //começa no menu
     unsigned int resolucao = 1;
     unsigned int sprite = 1;
+    int distancia_andada = 0;
+    int obs_tela1, obs_tela2;
     bool tela_cheia = 1, aplicar = 0;
-    double start_load, delta=1, velocidade = 250, gravidade = 1800, pulo = 700;
+    double start_load, delta=1, velocidade = 250, gravidade = 1800, pulo = 700, velocidade_geral;
     double start_delta = al_get_time();
 
     unsigned char key[ALLEGRO_KEY_MAX]; //um indice do vetor para cada tecla, com máximo para todos as keys do Allegro
@@ -136,7 +136,7 @@ int main(){
                     personagem.abaixado = 0;
                     personagem.direcao = 0;
                     if(key[ALLEGRO_KEY_W])
-                            personagem.angulo = 270;
+                            personagem.angulo = 270; //angulos invertidos da nossa visão tradicional
                     if(key[ALLEGRO_KEY_S])
                             personagem.angulo = 90;
                     if(key[ALLEGRO_KEY_A]){
@@ -163,35 +163,37 @@ int main(){
                         personagem.velocidade_y = -pulo;
                         personagem.chao = 0;
                     }
-                    if(personagem.abaixado){
-                        prox_x = personagem.x + personagem.direcao * velocidade/2 * delta;
-                        if(!colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estruturas[0])){
-                            personagem.x = prox_x;
-                            fundo3.scroll_x -= personagem.direcao * velocidade * delta/2;
-                            fundo2.scroll_x -= personagem.direcao * velocidade * delta/4;
-                            fundo1.scroll_x -= personagem.direcao * velocidade * delta/8;
+
+                    velocidade_geral = velocidade * delta;
+                    if(personagem.abaixado) velocidade_geral =  velocidade_geral / 2.0;
+
+                    prox_x = personagem.x + personagem.direcao * velocidade_geral;
+                    prox_y =  personagem.y + personagem.velocidade_y * delta;
+                    struct obstacle temp;
+                    obs_tela1 = estruturas[0].x1 - distancia_andada; //valor convertido posição na tela
+                    obs_tela2 = estruturas[0].x2 - distancia_andada;
+                    temp.x1 = obs_tela1;
+                    temp.x2 = obs_tela2;
+                    temp.y1 = estruturas[0].y1;
+                    temp.y2 = estruturas[0].y2;
+                    if(!colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                        personagem.x = prox_x;
+                        distancia_andada += personagem.direcao * velocidade_geral;
+                       //printf("Distancia: %d\n", distancia_andada);
+                        fundo3.scroll_x -= personagem.direcao * velocidade_geral;
+                        fundo2.scroll_x -= personagem.direcao * velocidade_geral/2;
+                        fundo1.scroll_x -= personagem.direcao * velocidade_geral/4;
+                    }
+                    if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                        if (personagem.velocidade_y > 0){
+                            personagem.chao = 1;
+                            personagem.velocidade_y = 0;
+                            personagem.y = estruturas[0].y1;
                         }
-                    } 
+                    }
                     else{
-                        prox_x = personagem.x + personagem.direcao * velocidade * delta;
-                        prox_y =  personagem.y + personagem.velocidade_y * delta;
-                        if(!colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estruturas[0])){
-                            personagem.x = prox_x;
-                            fundo3.scroll_x -= personagem.direcao * velocidade * delta;
-                            fundo2.scroll_x -= personagem.direcao * velocidade * delta/2;
-                            fundo1.scroll_x -= personagem.direcao * velocidade * delta/4;
-                        }
-                        if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estruturas[0])){
-                            if (personagem.velocidade_y > 0){
-                                personagem.chao = 1;
-                                personagem.velocidade_y = 0;
-                                personagem.y = estruturas[0].y1;
-                            }
-                        }
-                        else{
-                            personagem.chao = 0;
-                            personagem.y = prox_y;
-                        }
+                        personagem.chao = 0;
+                        personagem.y = prox_y;
                     }
                     if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
                     if(personagem.x+LARGURA_PERSONAGEM > X_SCREEN/2) personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
@@ -338,6 +340,9 @@ int main(){
                         atirou(personagem, gun);
                     }
                     atualiza_lista(gun, velocidade*delta*5, X_SCREEN, Y_SCREEN);
+                    //for(int i=0;i<=MAX_OBSTACULOS;i++){
+                        //if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
+                            al_draw_filled_rectangle(obs_tela1, estruturas[0].y1, obs_tela2, estruturas[0].y2, al_map_rgb(128, 128, 128)); //predio
                 break;
                 case LOADING:
                     double now_load = al_get_time();

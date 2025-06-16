@@ -47,6 +47,7 @@ ALLEGRO_DISPLAY *configura_display(ALLEGRO_DISPLAY *display, int X_SCREEN, int Y
         t = dimensoes();
         X_SCREEN = t.X_SCREEN;
         Y_SCREEN = t.Y_SCREEN;
+        al_set_new_display_option(ALLEGRO_VSYNC, 1, ALLEGRO_SUGGEST);
         al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
     }
     display = al_create_display(X_SCREEN, Y_SCREEN);

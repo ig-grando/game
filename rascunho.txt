@@ -2,4 +2,6 @@ Para rodar:
 gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 --libs --cflags) -lallegro_font -lallegro_ttf
 
 O pé do boneco está em y
-E + 10 de x
+
+Gerar as estruturas de maneira procedural em um loop
+Ir exibindo elas
