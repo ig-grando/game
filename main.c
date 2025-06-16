@@ -15,7 +15,7 @@
 #define KEY_SEEN 1 //A tecla foi detectada pelo menos uma vez.
 #define KEY_DOWN 2 //A tecla está mantida pressionada
 
-#define MAX_OBSTACULOS 0
+#define MAX_OBSTACULOS 40
 
 #define LARGURA_PERSONAGEM 67
 #define ALTURA_PERSONAGEM 87
@@ -32,6 +32,7 @@
 
 
 int main(){
+    srand(time(NULL));
     init_basico();
     
     int X_SCREEN, Y_SCREEN;
@@ -98,7 +99,7 @@ int main(){
     ALLEGRO_EVENT event;
     struct boneco personagem;
     memset(&personagem, 0, sizeof(personagem));
-    personagem.x = personagem.y = 500;
+    personagem.x = personagem.y = 480;
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.atirando = 0;
@@ -107,11 +108,27 @@ int main(){
     gun = inicia_arma();
     //struct bala *bullet_aux;
 
+    int altura;
     struct obstacle estruturas[MAX_OBSTACULOS];
-    estruturas[0].x1 = 2000;
+    estruturas[0].x1 = 400;
     estruturas[0].y1 = Y_SCREEN*0.7;
-    estruturas[0].x2 = 2300;
+    estruturas[0].x2 = 600;
     estruturas[0].y2 = Y_SCREEN;
+    for(int i=1;i<MAX_OBSTACULOS;i++){
+        estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75);
+        estruturas[i].x2 = estruturas[i].x1 + 350 + rand() % (500);
+        if (rand() % 2 == 0)
+            altura = -125 + rand() % (51);   // -150 a -100 (inclusive)
+        else
+            altura = 75 + rand() % (51);
+        if(estruturas[i-1].y1 + altura > Y_SCREEN - 100)
+            estruturas[i].y1 = Y_SCREEN - 100;
+        else if(estruturas[i-1].y1 + altura < 50)
+            estruturas[i].y1 = 50;
+        else
+            estruturas[i].y1 = estruturas[i-1].y1 + altura;
+        estruturas[i].y2 = Y_SCREEN;
+    }
 
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
@@ -120,9 +137,10 @@ int main(){
     unsigned int resolucao = 1;
     unsigned int sprite = 1;
     int distancia_andada = 0;
+    int pode_andar_x, pode_andar_y, altura_colide;
     int obs_tela1, obs_tela2;
     bool tela_cheia = 1, aplicar = 0;
-    double start_load, delta=1, velocidade = 250, gravidade = 1800, pulo = 700, velocidade_geral;
+    double start_load, delta=1, velocidade = 400, gravidade = 1800, pulo = 700, velocidade_geral;
     double start_delta = al_get_time();
 
     unsigned char key[ALLEGRO_KEY_MAX]; //um indice do vetor para cada tecla, com máximo para todos as keys do Allegro
@@ -170,40 +188,53 @@ int main(){
                     prox_x = personagem.x + personagem.direcao * velocidade_geral;
                     prox_y =  personagem.y + personagem.velocidade_y * delta;
                     struct obstacle temp;
-                    obs_tela1 = estruturas[0].x1 - distancia_andada; //valor convertido posição na tela
-                    obs_tela2 = estruturas[0].x2 - distancia_andada;
-                    temp.x1 = obs_tela1;
-                    temp.x2 = obs_tela2;
-                    temp.y1 = estruturas[0].y1;
-                    temp.y2 = estruturas[0].y2;
-                    if(!colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                    pode_andar_x = pode_andar_y = 1;
+                    for(int i=0;i<MAX_OBSTACULOS;i++){
+                        obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
+                        obs_tela2 = estruturas[i].x2 - distancia_andada;
+                        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
+                            temp.x1 = obs_tela1;
+                            temp.x2 = obs_tela2;
+                            temp.y1 = estruturas[i].y1;
+                            temp.y2 = estruturas[i].y2;
+                            if(colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                                pode_andar_x = 0;
+                            }
+                            if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                                pode_andar_y = 0;
+                                altura_colide = temp.y1;
+                            }
+                        }
+                    }
+                    if(pode_andar_x){
                         personagem.x = prox_x;
                         distancia_andada += personagem.direcao * velocidade_geral;
-                       //printf("Distancia: %d\n", distancia_andada);
+                        //printf("Distancia: %d\n", distancia_andada);
                         fundo3.scroll_x -= personagem.direcao * velocidade_geral;
                         fundo2.scroll_x -= personagem.direcao * velocidade_geral/2;
                         fundo1.scroll_x -= personagem.direcao * velocidade_geral/4;
                     }
-                    if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                    if(!pode_andar_y){
                         if (personagem.velocidade_y > 0){
-                            personagem.chao = 1;
-                            personagem.velocidade_y = 0;
-                            personagem.y = estruturas[0].y1;
-                        }
+                                personagem.chao = 1;
+                                personagem.velocidade_y = 0;
+                                personagem.y = altura_colide;
+                            }
                     }
                     else{
                         personagem.chao = 0;
                         personagem.y = prox_y;
                     }
+                    
                     if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
-                    if(personagem.x+LARGURA_PERSONAGEM > X_SCREEN/2) personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
-                    else if(personagem.x <= 0)personagem.x = 0;
+                    personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
+                    if(personagem.x <= 0)personagem.x = 0;
                     //personagem.y += personagem.velocidade_y * delta; 
-                    if(personagem.y >= Y_SCREEN*0.8){
+                    /*if(personagem.y >= Y_SCREEN*0.8){
                         personagem.y = Y_SCREEN*0.8;
                         personagem.velocidade_y = 0;
                         personagem.chao = 1;
-                    }
+                    }*/
 
                    if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
                 }
@@ -332,7 +363,7 @@ int main(){
                 case JOGO:
                     desenha_jogo(personagem, gun, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
                     al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
-                    al_draw_filled_rectangle(estruturas[0].x1, estruturas[0].y1, estruturas[0].x2, estruturas[0].y2, al_map_rgb(0, 0, 255)); //predio
+                    //al_draw_filled_rectangle(estruturas[0].x1, estruturas[0].y1, estruturas[0].x2, estruturas[0].y2, al_map_rgb(0, 0, 255)); //predio
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
@@ -340,9 +371,12 @@ int main(){
                         atirou(personagem, gun);
                     }
                     atualiza_lista(gun, velocidade*delta*5, X_SCREEN, Y_SCREEN);
-                    //for(int i=0;i<=MAX_OBSTACULOS;i++){
-                        //if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
-                            al_draw_filled_rectangle(obs_tela1, estruturas[0].y1, obs_tela2, estruturas[0].y2, al_map_rgb(128, 128, 128)); //predio
+                    for(int i=0;i<MAX_OBSTACULOS;i++){
+                        obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
+                        obs_tela2 = estruturas[i].x2 - distancia_andada;
+                        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
+                            al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
+                    }
                 break;
                 case LOADING:
                     double now_load = al_get_time();
