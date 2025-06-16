@@ -28,6 +28,7 @@
 #define CONTROLE 5
 #define PAUSE 6
 #define LOADING 7
+#define MORTE 8
 
 
 
@@ -103,6 +104,7 @@ int main(){
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.atirando = 0;
+    personagem.vida = 3;
     int prox_x, prox_y;
     struct arma *gun;
     gun = inicia_arma();
@@ -235,6 +237,8 @@ int main(){
                         personagem.velocidade_y = 0;
                         personagem.chao = 1;
                     }*/
+                   if(personagem.y >= Y_SCREEN)
+                    personagem.vida = 0;
 
                    if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
                 }
@@ -274,6 +278,8 @@ int main(){
                             case LOADING:
                                 tela = MENU;
                             break;
+                            case MORTE:
+                                tela = MENU;
                         }
                     break;
                 }
@@ -362,21 +368,22 @@ int main(){
                 break;
                 case JOGO:
                     desenha_jogo(personagem, gun, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
-                    al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
-                    //al_draw_filled_rectangle(estruturas[0].x1, estruturas[0].y1, estruturas[0].x2, estruturas[0].y2, al_map_rgb(0, 0, 255)); //predio
+                    //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
                     if(personagem.atirando && gun->cooldown <= 0){
                         atirou(personagem, gun);
                     }
-                    atualiza_lista(gun, velocidade*delta*5, X_SCREEN, Y_SCREEN);
+                    atualiza_lista(gun, velocidade*delta*4, X_SCREEN, Y_SCREEN);
                     for(int i=0;i<MAX_OBSTACULOS;i++){
                         obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
                         obs_tela2 = estruturas[i].x2 - distancia_andada;
                         if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
                             al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
                     }
+                    if(personagem.vida <= 0)
+                        tela = MORTE;
                 break;
                 case LOADING:
                     double now_load = al_get_time();
@@ -384,6 +391,10 @@ int main(){
                         tela = JOGO;
                     al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Carregando...");
+                break;
+                case MORTE:
+                    al_clear_to_color(al_map_rgb(0, 0, 0));
+                    al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Skill Issue?");
                 break;
             }
             al_flip_display();

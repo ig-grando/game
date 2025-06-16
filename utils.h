@@ -17,6 +17,7 @@ struct boneco{
     int direcao;
     int lado;
     int angulo;
+    unsigned int vida;
     bool abaixado;
     bool chao;
     bool atirando;
