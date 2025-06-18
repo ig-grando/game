@@ -6,7 +6,7 @@ O pé do boneco está em y
 Colocar os inimigos.
 
 
-Colocar o fundo3 na frente dos predios
+Colocar o fundo3 e as balas na frente dos predios
 Transforamr os blocos cinzas na PNG do prédio.
 Colocar colisão nas balas.
 Reduzir a hitbox do boneco para ele cair antes.

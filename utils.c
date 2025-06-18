@@ -101,3 +101,32 @@ bool colide_y(int personagem_x, int personagem_y, int largura, int altura, struc
            personagem_y >= predio.y1 &&
            personagem_topo <= predio.y2); //o sinal de igual resolve travar na plataforma
 }
+
+void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCREEN){
+    int altura;
+    for(int i=1;i<MAX_OBSTACULOS;i++){
+        estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75);
+        estruturas[i].x2 = estruturas[i].x1 + 350 + rand() % (500);
+        if (rand() % 2 == 0)
+            altura = -125 + rand() % (51);   // -150 a -100 (inclusive)
+        else
+            altura = 75 + rand() % (51);
+        if(estruturas[i-1].y1 + altura > Y_SCREEN - 100)
+            estruturas[i].y1 = Y_SCREEN - 100;
+        else if(estruturas[i-1].y1 + altura < 50)
+            estruturas[i].y1 = 50;
+        else
+            estruturas[i].y1 = estruturas[i-1].y1 + altura;
+        estruturas[i].y2 = Y_SCREEN;
+    }
+}
+
+struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+    personagem.x = X_SCREEN/2;
+    personagem.y = Y_SCREEN/2;
+    personagem.velocidade_y = 0;
+    personagem.chao = 1;
+    personagem.vida = 3;
+    gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
+    return personagem;
+}

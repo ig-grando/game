@@ -111,27 +111,12 @@ int main(){
     gun = inicia_arma();
     //struct bala *bullet_aux;
 
-    int altura;
     struct obstacle estruturas[MAX_OBSTACULOS];
     estruturas[0].x1 = X_SCREEN/2 -100;
     estruturas[0].y1 = Y_SCREEN*0.7;
     estruturas[0].x2 = X_SCREEN/2 +100;
     estruturas[0].y2 = Y_SCREEN;
-    for(int i=1;i<MAX_OBSTACULOS;i++){
-        estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75);
-        estruturas[i].x2 = estruturas[i].x1 + 350 + rand() % (500);
-        if (rand() % 2 == 0)
-            altura = -125 + rand() % (51);   // -150 a -100 (inclusive)
-        else
-            altura = 75 + rand() % (51);
-        if(estruturas[i-1].y1 + altura > Y_SCREEN - 100)
-            estruturas[i].y1 = Y_SCREEN - 100;
-        else if(estruturas[i-1].y1 + altura < 50)
-            estruturas[i].y1 = 50;
-        else
-            estruturas[i].y1 = estruturas[i-1].y1 + altura;
-        estruturas[i].y2 = Y_SCREEN;
-    }
+    gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
 
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
@@ -213,7 +198,7 @@ int main(){
                         personagem.x = prox_x;
                         distancia_andada += personagem.direcao * velocidade_geral;
                         //printf("Distancia: %d\n", distancia_andada);
-                        fundo3.scroll_x -= personagem.direcao * velocidade_geral;
+                        fundo3.scroll_x -= personagem.direcao * velocidade_geral*1.2;
                         fundo2.scroll_x -= personagem.direcao * velocidade_geral/2;
                         fundo1.scroll_x -= personagem.direcao * velocidade_geral/4;
                     }
@@ -368,7 +353,7 @@ int main(){
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
                 break;
                 case JOGO:
-                    desenha_jogo(personagem, gun, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
+                    desenha_jogo(personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
                     sprite++;
                     if(sprite >= 20) sprite = 0;
@@ -376,19 +361,10 @@ int main(){
                     if(personagem.atirando && gun->cooldown <= 0){
                         atirou(personagem, gun);
                     }
-                    atualiza_lista(gun, velocidade*delta*4, X_SCREEN, Y_SCREEN);
-                    for(int i=0;i<MAX_OBSTACULOS;i++){
-                        obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
-                        obs_tela2 = estruturas[i].x2 - distancia_andada;
-                        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
-                            al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
-                    }
+                    atualiza_lista(gun, velocidade*delta*3, X_SCREEN, Y_SCREEN);
+                    //desenha_estruturas(estruturas, distancia_andada, MAX_OBSTACULOS, X_SCREEN);
                     if(personagem.vida <= 0){
-                        personagem.x = X_SCREEN/2;
-                        personagem.y = Y_SCREEN/2;
-                        personagem.velocidade_y = 0;
-                        personagem.chao = 1;
-                        personagem.vida = 3;
+                        personagem = reseta_game(personagem, estruturas, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = MORTE;
                     }
