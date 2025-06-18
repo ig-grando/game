@@ -100,7 +100,8 @@ int main(){
     ALLEGRO_EVENT event;
     struct boneco personagem;
     memset(&personagem, 0, sizeof(personagem));
-    personagem.x = personagem.y = 480;
+    personagem.x = X_SCREEN/2;
+    personagem.y = Y_SCREEN/2;
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.atirando = 0;
@@ -112,9 +113,9 @@ int main(){
 
     int altura;
     struct obstacle estruturas[MAX_OBSTACULOS];
-    estruturas[0].x1 = 400;
+    estruturas[0].x1 = X_SCREEN/2 -100;
     estruturas[0].y1 = Y_SCREEN*0.7;
-    estruturas[0].x2 = 600;
+    estruturas[0].x2 = X_SCREEN/2 +100;
     estruturas[0].y2 = Y_SCREEN;
     for(int i=1;i<MAX_OBSTACULOS;i++){
         estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75);
@@ -217,11 +218,11 @@ int main(){
                         fundo1.scroll_x -= personagem.direcao * velocidade_geral/4;
                     }
                     if(!pode_andar_y){
-                        if (personagem.velocidade_y > 0){
+                        if(personagem.velocidade_y > 0){
                                 personagem.chao = 1;
                                 personagem.velocidade_y = 0;
                                 personagem.y = altura_colide;
-                            }
+                        }
                     }
                     else{
                         personagem.chao = 0;
@@ -382,8 +383,15 @@ int main(){
                         if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
                             al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
                     }
-                    if(personagem.vida <= 0)
+                    if(personagem.vida <= 0){
+                        personagem.x = X_SCREEN/2;
+                        personagem.y = Y_SCREEN/2;
+                        personagem.velocidade_y = 0;
+                        personagem.chao = 1;
+                        personagem.vida = 3;
+                        distancia_andada = 0;
                         tela = MORTE;
+                    }
                 break;
                 case LOADING:
                     double now_load = al_get_time();
