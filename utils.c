@@ -7,6 +7,7 @@
 #include <allegro5/allegro_ttf.h>
 
 #include "utils.h"
+#include "tiro.h"
 
 void verifica_init(bool flag, const char *string){
     if(!flag){
@@ -55,6 +56,18 @@ ALLEGRO_DISPLAY *configura_display(ALLEGRO_DISPLAY *display, int X_SCREEN, int Y
     return display;
 }
 
+struct inimigo *gera_inimigo(int x, int y){
+    struct inimigo *enemy = (struct inimigo *)malloc(sizeof(struct inimigo));
+    if(!enemy)
+    verifica_init(enemy, "inimigo");
+    enemy->x = x;
+    enemy->y = y;
+    enemy->atirando=0;
+    enemy->lado = 1;
+    enemy->vida = 5;
+    enemy->gun = inicia_arma();
+    return enemy;
+}
 
 int altura_texto(ALLEGRO_FONT *fonte) {
     int bbx, bby, bbw, bbh;
@@ -104,6 +117,8 @@ bool colide_y(int personagem_x, int personagem_y, int largura, int altura, struc
 
 void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCREEN){
     int altura;
+    int x_inimigo;
+    unsigned int inimigo;
     for(int i=1;i<MAX_OBSTACULOS;i++){
         estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75);
         estruturas[i].x2 = estruturas[i].x1 + 350 + rand() % (500);
@@ -118,6 +133,15 @@ void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCR
         else
             estruturas[i].y1 = estruturas[i-1].y1 + altura;
         estruturas[i].y2 = Y_SCREEN;
+        inimigo = rand() % 2; //aqui está 50%
+        x_inimigo = estruturas[i].x1+20 + rand() % (estruturas[i].x2 - estruturas[i].x1 - 120);
+        //printf("X Inimigo %d\n", x_inimigo);
+        printf("Inimigo %d\n", inimigo);
+        if(inimigo == 0){
+            estruturas[i].inimigo = 1;
+            estruturas[i].enemy = gera_inimigo(x_inimigo, estruturas[i].y1-100);
+        }
+        else estruturas[i].inimigo = 0;
     }
 }
 

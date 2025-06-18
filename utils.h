@@ -23,6 +23,15 @@ struct boneco{
     bool atirando;
 };
 
+struct inimigo{
+    struct arma *gun;
+    int x;
+    int y;
+    int lado;
+    unsigned int vida;
+    bool atirando;
+};
+
 struct tela{
     int X_SCREEN;
     int Y_SCREEN;
@@ -40,6 +49,8 @@ struct obstacle{
     int x2;
     int y1;
     int y2;
+    bool inimigo;
+    struct inimigo *enemy;
 };
 
 void verifica_init(bool flag, const char *string);

@@ -115,13 +115,24 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     
 }
 
+
 void desenha_estruturas(struct obstacle estruturas[], int distancia_andada, int MAX_OBSTACULOS, int X_SCREEN){
-    int obs_tela1, obs_tela2;
+    int obs_tela1, obs_tela2, enemy_tela1, enemy_tela2;
     for(int i=0;i<MAX_OBSTACULOS;i++){
         obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
         obs_tela2 = estruturas[i].x2 - distancia_andada;
-        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN)
+        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
             al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
+            printf("inimigo: %d\n", estruturas[i].inimigo);
+            if(estruturas[i].inimigo){
+                struct inimigo *temp;
+                temp = estruturas[i].enemy;
+                enemy_tela1 = temp->x - distancia_andada;
+                enemy_tela2 = temp->x + 80 - distancia_andada;
+                al_draw_filled_rectangle(enemy_tela1, temp->y, enemy_tela2, temp->y+100, al_map_rgb(255, 0, 0));
+                printf("oi\n");
+            }
+        }
     }
 }
 
@@ -210,4 +221,3 @@ void desenha_jogo(struct boneco personagem, struct arma *gun, struct obstacle es
                 desenha_boneco_parado(sprite_sheet, personagem, sprite/5);
     }
 }
-

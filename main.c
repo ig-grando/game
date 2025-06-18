@@ -116,6 +116,8 @@ int main(){
     estruturas[0].y1 = Y_SCREEN*0.7;
     estruturas[0].x2 = X_SCREEN/2 +100;
     estruturas[0].y2 = Y_SCREEN;
+    estruturas[0].inimigo = 0;
+    estruturas[0].enemy = NULL;
     gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
 
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
