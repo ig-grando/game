@@ -36,8 +36,8 @@ struct bala *inicia_bala(int x, int y, int angulo){
     return b;
 }
 
-void atirou(struct boneco personagem, struct arma *gun){
-    struct bala *bullet = inicia_bala(personagem.x+20, personagem.y-35, personagem.angulo);//trocar 0 por persongem.angulo depois
+void atirou(int x, int y, int angulo, float cooldown, struct arma *gun){
+    struct bala *bullet = inicia_bala(x+20, y-35, angulo);//trocar 0 por persongem.angulo depois
     if(!gun->primeira_bala){
         gun->primeira_bala = bullet;
         gun->ultima_bala = bullet;
@@ -46,7 +46,7 @@ void atirou(struct boneco personagem, struct arma *gun){
         gun->ultima_bala->proxima = bullet;
         gun->ultima_bala = bullet;
     }
-    gun->cooldown = 0.2;
+    gun->cooldown = cooldown;
 }
 
 

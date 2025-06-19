@@ -136,7 +136,7 @@ void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCR
         inimigo = rand() % 2; //aqui está 50%
         x_inimigo = estruturas[i].x1+20 + rand() % (estruturas[i].x2 - estruturas[i].x1 - 120);
         //printf("X Inimigo %d\n", x_inimigo);
-        printf("Inimigo %d\n", inimigo);
+        //printf("Inimigo %d\n", inimigo);
         if(inimigo == 0){
             estruturas[i].inimigo = 1;
             estruturas[i].enemy = gera_inimigo(x_inimigo, estruturas[i].y1-100);

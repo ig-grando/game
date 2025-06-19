@@ -22,9 +22,11 @@ struct arma *inicia_arma();
 
 struct bala *inicia_bala(int x, int y, int angulo);
 
-void atirou(struct boneco personagem, struct arma *gun);
+void atirou(int x, int y, int angulo, float cooldown, struct arma *gun);
 
 void avança_bala(struct bala *bullet, int velocidade);
+
+void atualiza_lista(struct arma *gun, int velocidade, int X_SCREEN, int Y_SCREEN);
 
 void destroi_bala(struct bala *bullet);
 

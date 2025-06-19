@@ -70,6 +70,18 @@ void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personage
     
 }
 
+void desenha_inimigo_parado(ALLEGRO_BITMAP *sprite_sheet, int x, int y, bool atirando, int sprite){
+    int ini= PIXEL*2;
+    int ini2 = PIXEL*54;
+    al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, x, y-9, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
+    if(atirando){
+        al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*3, x-4*PIXEL-4, y-9+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+    }
+    else
+        al_draw_scaled_bitmap(sprite_sheet, (ini + 3*PIXEL), ini2, PIXEL*4, PIXEL*2, x- 3*PIXEL-4, y-4, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
+}
+
+
 void desenha_boneco_abaixado_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite){
     int ini= PIXEL*26;
     int ini2 = PIXEL*31;
@@ -115,28 +127,7 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     
 }
 
-
-void desenha_estruturas(struct obstacle estruturas[], int distancia_andada, int MAX_OBSTACULOS, int X_SCREEN){
-    int obs_tela1, obs_tela2, enemy_tela1, enemy_tela2;
-    for(int i=0;i<MAX_OBSTACULOS;i++){
-        obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
-        obs_tela2 = estruturas[i].x2 - distancia_andada;
-        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
-            al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
-            printf("inimigo: %d\n", estruturas[i].inimigo);
-            if(estruturas[i].inimigo){
-                struct inimigo *temp;
-                temp = estruturas[i].enemy;
-                enemy_tela1 = temp->x - distancia_andada;
-                enemy_tela2 = temp->x + 80 - distancia_andada;
-                al_draw_filled_rectangle(enemy_tela1, temp->y, enemy_tela2, temp->y+100, al_map_rgb(255, 0, 0));
-                printf("oi\n");
-            }
-        }
-    }
-}
-
-void desenha_bala(struct arma *gun){
+void desenha_bala(struct arma *gun, int distancia_andada){
     struct bala *bullet;
     if(!gun->primeira_bala) return;
     bullet = gun->primeira_bala;
@@ -147,6 +138,32 @@ void desenha_bala(struct arma *gun){
         bullet = bullet->proxima;
     }
 }
+
+void desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, struct obstacle estruturas[], int distancia_andada, int sprite, double velocidade, double delta, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+    int obs_tela1, obs_tela2, enemy_tela1, enemy_tela2;
+    for(int i=0;i<MAX_OBSTACULOS;i++){
+        obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
+        obs_tela2 = estruturas[i].x2 - distancia_andada;
+        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
+            al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
+            //printf("inimigo: %d\n", estruturas[i].inimigo);
+            if(estruturas[i].inimigo){
+                struct inimigo *temp;
+                temp = estruturas[i].enemy;
+                enemy_tela1 = temp->x - distancia_andada;
+                enemy_tela2 = temp->x + 80 - distancia_andada;
+                //al_draw_filled_rectangle(enemy_tela1, temp->y, enemy_tela2, temp->y+100, al_map_rgb(255, 0, 0));
+                desenha_inimigo_parado(sprite_inimigo, enemy_tela1, temp->y, temp->atirando, sprite);
+                temp->gun->cooldown -= delta;
+                desenha_bala(temp->gun, distancia_andada);
+                if(temp->gun->cooldown <= 0)
+                    atirou(enemy_tela1, temp->y+40, 180, 1.0, temp->gun);
+                atualiza_lista(temp->gun, velocidade*delta*1.2, X_SCREEN, Y_SCREEN);
+            }   
+        }
+    }
+}
+
 
 void desenha_menu(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN){
     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
@@ -186,8 +203,10 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
     
 }
 
-void desenha_jogo(struct boneco personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, unsigned int sprite, int distancia_andada, int MAX_OBSTACULOS,int X_SCREEN, int Y_SCREEN){
-    fundo1.scroll_offset = fundo1.scroll_x % X_SCREEN;
+void desenha_jogo(struct boneco personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, 
+    unsigned int sprite, int distancia_andada, double velocidade, double delta, int MAX_OBSTACULOS,int X_SCREEN, int Y_SCREEN){
+    
+        fundo1.scroll_offset = fundo1.scroll_x % X_SCREEN;
     if (fundo1.scroll_offset > 0) fundo1.scroll_offset -= X_SCREEN; //Corrige casos em que o resto é positivo, garantindo que o offset seja sempre negativo, para quando andar para esquerda
     fundo2.scroll_offset = fundo2.scroll_x % X_SCREEN;
     if (fundo2.scroll_offset > 0) fundo2.scroll_offset -= X_SCREEN;
@@ -203,8 +222,8 @@ void desenha_jogo(struct boneco personagem, struct arma *gun, struct obstacle es
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), X_SCREEN + fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     
-    desenha_estruturas(estruturas, distancia_andada, MAX_OBSTACULOS, X_SCREEN);
-    desenha_bala(gun);
+    desenha_estruturas(sprite_inimigo, estruturas, distancia_andada, sprite, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+    desenha_bala(gun, distancia_andada);
     if(!personagem.chao)
         desenha_boneco_pulando(sprite_sheet, personagem);
     else{

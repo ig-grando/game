@@ -78,6 +78,9 @@ int main(){
     ALLEGRO_BITMAP *sprite_sheet = al_load_bitmap("usaveis/sprite3.png");
     verifica_init(sprite_sheet, "usaveis/sprite3.png");
 
+    ALLEGRO_BITMAP *sprite_inimigo1 = al_load_bitmap("usaveis/inimigo1.png");
+    verifica_init(sprite_sheet, "usaveis/inimigo1.png");
+
     ALLEGRO_BITMAP *cursor = al_load_bitmap("usaveis/cursor.png");
     verifica_init(fundo_menu, "usaveis/cursor.png");
 
@@ -355,13 +358,13 @@ int main(){
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
                 break;
                 case JOGO:
-                    desenha_jogo(personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                    desenha_jogo(personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
                     if(personagem.atirando && gun->cooldown <= 0){
-                        atirou(personagem, gun);
+                        atirou(personagem.x, personagem.y, personagem.angulo, 0.2, gun);
                     }
                     atualiza_lista(gun, velocidade*delta*3, X_SCREEN, Y_SCREEN);
                     //desenha_estruturas(estruturas, distancia_andada, MAX_OBSTACULOS, X_SCREEN);
@@ -398,6 +401,7 @@ int main(){
     al_destroy_bitmap(fundo_menu);
     al_destroy_bitmap(check);
     al_destroy_bitmap(sprite_sheet);
+    al_destroy_bitmap(sprite_inimigo1);
     al_destroy_bitmap(fundo0);
     al_destroy_bitmap(fundo1.bitmap);
     al_destroy_bitmap(fundo2.bitmap);
