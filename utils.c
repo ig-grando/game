@@ -56,6 +56,7 @@ ALLEGRO_DISPLAY *configura_display(ALLEGRO_DISPLAY *display, int X_SCREEN, int Y
     return display;
 }
 
+
 struct inimigo *gera_inimigo(int x, int y){
     struct inimigo *enemy = (struct inimigo *)malloc(sizeof(struct inimigo));
     if(!enemy)
@@ -94,7 +95,17 @@ void desenha_retangulo_option(ALLEGRO_FONT *fonte, const char *texto, int x, int
     al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(0, 0, 0), 3);
 }
 
-bool colide_x(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio) {
+bool colide_bala_x(int personagem_x, int personagem_y, int largura, int altura, int x1, int x2, int y1, int y2){
+    int personagem_direita = personagem_x + largura;
+    int personagem_topo = personagem_y - altura;
+
+    return (personagem_x < x2 &&
+           personagem_direita > x1 &&
+           personagem_y > y1 &&
+           personagem_topo < y2);
+}
+
+bool colide_x(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio){
     int personagem_direita = personagem_x + largura;
     int personagem_topo = personagem_y - altura;
 
@@ -105,7 +116,7 @@ bool colide_x(int personagem_x, int personagem_y, int largura, int altura, struc
 }
 
 
-bool colide_y(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio) {
+bool colide_y(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio){
     int personagem_direita = personagem_x + largura;
     int personagem_topo = personagem_y - altura;
 
@@ -128,8 +139,8 @@ void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCR
             altura = 75 + rand() % (51);
         if(estruturas[i-1].y1 + altura > Y_SCREEN - 100)
             estruturas[i].y1 = Y_SCREEN - 100;
-        else if(estruturas[i-1].y1 + altura < 50)
-            estruturas[i].y1 = 50;
+        else if(estruturas[i-1].y1 + altura < 100)
+            estruturas[i].y1 = 100;
         else
             estruturas[i].y1 = estruturas[i-1].y1 + altura;
         estruturas[i].y2 = Y_SCREEN;

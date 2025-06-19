@@ -17,6 +17,8 @@ struct boneco{
     int direcao;
     int lado;
     int angulo;
+    int largura;
+    int altura;
     unsigned int vida;
     bool abaixado;
     bool chao;
@@ -66,6 +68,11 @@ int altura_texto(ALLEGRO_FONT *fonte);
 bool mouse_no_botao(ALLEGRO_FONT *fonte, const char *texto, int x, int y, int mouse_x, int mouse_y);
 
 void desenha_retangulo_option(ALLEGRO_FONT *fonte, const char *texto, int x, int y, struct coordenada *coord);
+
+bool colide_x(int personagem_x, int personagem_y, int largura, int altura, struct obstacle predio);
+
+//identico ao outro colide mas nçao quis mudar ele por causa struct
+bool colide_bala_x(int personagem_x, int personagem_y, int largura, int altura, int x1, int x2, int y1, int y2);
 
 
 #endif

@@ -18,7 +18,7 @@
 #define MAX_OBSTACULOS 40
 
 #define LARGURA_PERSONAGEM 67
-#define ALTURA_PERSONAGEM 87
+#define ALTURA_PERSONAGEM 88
 
 #define MENU 0
 #define CONFIG 1
@@ -105,6 +105,8 @@ int main(){
     memset(&personagem, 0, sizeof(personagem));
     personagem.x = X_SCREEN/2;
     personagem.y = Y_SCREEN/2;
+    personagem.largura = LARGURA_PERSONAGEM;
+    personagem.altura = ALTURA_PERSONAGEM;
     personagem.chao = 1;
     personagem.velocidade_y = 0;
     personagem.atirando = 0;
@@ -145,6 +147,7 @@ int main(){
             case ALLEGRO_EVENT_TIMER:
                 if(tela ==  JOGO){
                     personagem.abaixado = 0;
+                    personagem.altura = ALTURA_PERSONAGEM;
                     personagem.direcao = 0;
                     if(key[ALLEGRO_KEY_W])
                             personagem.angulo = 270; //angulos invertidos da nossa visão tradicional
@@ -168,8 +171,10 @@ int main(){
                         if(key[ALLEGRO_KEY_S])
                             personagem.angulo = 45;
                     }
-                    if(key[ALLEGRO_KEY_LCTRL])
+                    if(key[ALLEGRO_KEY_LCTRL]){
                         personagem.abaixado = 1;
+                        personagem.altura = 70;
+                    }
                     if(key[ALLEGRO_KEY_SPACE] && personagem.chao){
                         personagem.velocidade_y = -pulo;
                         personagem.chao = 0;
@@ -229,7 +234,7 @@ int main(){
                         personagem.chao = 1;
                     }*/
                    if(personagem.y >= Y_SCREEN)
-                    personagem.vida = 0;
+                        personagem.vida = 0;
 
                    if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
                 }
@@ -359,15 +364,15 @@ int main(){
                 break;
                 case JOGO:
                     desenha_jogo(personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
-                    //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x +67, personagem.y+1, al_map_rgb(255, 0, 0)); //marca x, y do boneco
+                    //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
+                    printf("VIDA krl: %d\n", personagem.vida);
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
                     if(personagem.atirando && gun->cooldown <= 0){
-                        atirou(personagem.x, personagem.y, personagem.angulo, 0.2, gun);
+                        atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun);
                     }
-                    atualiza_lista(gun, velocidade*delta*3, X_SCREEN, Y_SCREEN);
-                    //desenha_estruturas(estruturas, distancia_andada, MAX_OBSTACULOS, X_SCREEN);
+                    atualiza_lista(gun, velocidade*delta*3, distancia_andada, X_SCREEN, Y_SCREEN);
                     if(personagem.vida <= 0){
                         personagem = reseta_game(personagem, estruturas, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
