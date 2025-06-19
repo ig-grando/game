@@ -149,6 +149,7 @@ int main(){
                     personagem.abaixado = 0;
                     personagem.altura = ALTURA_PERSONAGEM;
                     personagem.direcao = 0;
+
                     if(key[ALLEGRO_KEY_W])
                             personagem.angulo = 270; //angulos invertidos da nossa visão tradicional
                     if(key[ALLEGRO_KEY_S])
@@ -180,9 +181,9 @@ int main(){
                         personagem.chao = 0;
                     }
 
+
                     velocidade_geral = velocidade * delta;
                     if(personagem.abaixado) velocidade_geral =  velocidade_geral / 2.0;
-
                     prox_x = personagem.x + personagem.direcao * velocidade_geral;
                     prox_y =  personagem.y + personagem.velocidade_y * delta;
                     struct obstacle temp;
@@ -214,9 +215,9 @@ int main(){
                     }
                     if(!pode_andar_y){
                         if(personagem.velocidade_y > 0){
-                                personagem.chao = 1;
-                                personagem.velocidade_y = 0;
-                                personagem.y = altura_colide;
+                            personagem.chao = 1;
+                            personagem.velocidade_y = 0;
+                            personagem.y = altura_colide;
                         }
                     }
                     else{
@@ -228,15 +229,8 @@ int main(){
                     personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
                     if(personagem.x <= 0)personagem.x = 0;
                     //personagem.y += personagem.velocidade_y * delta; 
-                    /*if(personagem.y >= Y_SCREEN*0.8){
-                        personagem.y = Y_SCREEN*0.8;
-                        personagem.velocidade_y = 0;
-                        personagem.chao = 1;
-                    }*/
-                   if(personagem.y >= Y_SCREEN)
-                        personagem.vida = 0;
-
-                   if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
+                    if(personagem.y >= Y_SCREEN) personagem.vida = 0;
+                    if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
                 }
                 for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
                         key[i] &= ~KEY_SEEN; //&= faz a operação AND e ~faz um NOT, O resultado remove KEY_SEEN, mas mantém se KEY_DOWN.
@@ -363,9 +357,9 @@ int main(){
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
                 break;
                 case JOGO:
-                    desenha_jogo(personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                    desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
+                        distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
-                    printf("VIDA krl: %d\n", personagem.vida);
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
@@ -373,6 +367,7 @@ int main(){
                         atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun);
                     }
                     atualiza_lista(gun, velocidade*delta*3, distancia_andada, X_SCREEN, Y_SCREEN);
+                    //printf("VIDA krl: %d\n", personagem.vida);
                     if(personagem.vida <= 0){
                         personagem = reseta_game(personagem, estruturas, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;

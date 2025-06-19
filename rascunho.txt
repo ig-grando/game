@@ -13,5 +13,8 @@ Reduzir a hitbox do boneco para ele cair antes.
 
 Problemas consertados:
 
-Quando meu boneco andava para frente as balas dos inimigos ficavam paradas por causa do movimento do cenário
+Quando meu boneco andava para frente as balas dos inimigos ficavam paradas por causa do movimento do cenário.
 Para resolver isso tive que considerar que as balas do meu boneco saiam de personagem.x + distancia andada e os dos oponentes de suas posições padrão.
+
+A vida do meu boneco não decrementava ao tomar hit.
+Para resolver isso tive só que passar o personagem como referência.

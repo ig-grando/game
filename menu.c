@@ -207,7 +207,7 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
     
 }
 
-void desenha_jogo(struct boneco personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, 
+void desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, 
     unsigned int sprite, int distancia_andada, double velocidade, double delta, int MAX_OBSTACULOS,int X_SCREEN, int Y_SCREEN){
     
         fundo1.scroll_offset = fundo1.scroll_x % X_SCREEN;
@@ -226,21 +226,21 @@ void desenha_jogo(struct boneco personagem, struct arma *gun, struct obstacle es
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), X_SCREEN + fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     
-    desenha_estruturas(sprite_inimigo, estruturas, &personagem, distancia_andada, sprite, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+    desenha_estruturas(sprite_inimigo, estruturas, personagem, distancia_andada, sprite, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
     desenha_bala(gun, distancia_andada, 0);
-    if(!personagem.chao)
-        desenha_boneco_pulando(sprite_sheet, personagem);
+    if(!personagem->chao)
+        desenha_boneco_pulando(sprite_sheet, *personagem);
     else{
-        if(personagem.direcao){
-            if(personagem.abaixado)
-                desenha_boneco_abaixado_andando(sprite_sheet, personagem, sprite/5);
+        if(personagem->direcao){
+            if(personagem->abaixado)
+                desenha_boneco_abaixado_andando(sprite_sheet, *personagem, sprite/5);
             else
-                desenha_boneco_andando(sprite_sheet, personagem, sprite/5);
+                desenha_boneco_andando(sprite_sheet, *personagem, sprite/5);
         }
         else
-            if(personagem.abaixado)
-                desenha_boneco_abaixado(sprite_sheet, personagem);
+            if(personagem->abaixado)
+                desenha_boneco_abaixado(sprite_sheet, *personagem);
             else
-                desenha_boneco_parado(sprite_sheet, personagem, sprite/5);
+                desenha_boneco_parado(sprite_sheet, *personagem, sprite/5);
     }
 }

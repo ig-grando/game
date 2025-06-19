@@ -99,8 +99,8 @@ void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int vel
             }
             destroi_bala(remover);
             if(atinge_personagem){
-                personagem->vida = -1;
-                printf("VIDA: %d\n", personagem->vida);
+                personagem->vida--;
+                //printf("VIDA: %d\n", personagem->vida);
             }
         }
         else{
