@@ -15,7 +15,7 @@
 #define KEY_SEEN 1 //A tecla foi detectada pelo menos uma vez.
 #define KEY_DOWN 2 //A tecla está mantida pressionada
 
-#define MAX_OBSTACULOS 40
+#define MAX_OBSTACULOS 24
 
 #define LARGURA_PERSONAGEM 67
 #define ALTURA_PERSONAGEM 88
@@ -364,9 +364,9 @@ int main(){
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
                     if(personagem.atirando && gun->cooldown <= 0){
-                        atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun);
+                        atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun); //somo a distancia para a coordenanda da bala ficar certa
                     }
-                    atualiza_lista(gun, velocidade*delta*3, distancia_andada, X_SCREEN, Y_SCREEN);
+                    atualiza_lista(gun, estruturas, velocidade*delta*3, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                     //printf("VIDA krl: %d\n", personagem.vida);
                     if(personagem.vida <= 0){
                         personagem = reseta_game(personagem, estruturas, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);

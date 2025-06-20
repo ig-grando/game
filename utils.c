@@ -165,3 +165,8 @@ struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[]
     gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
     return personagem;
 }
+
+void destroi_inimigo(struct inimigo *enemy){
+    destroi_arma(enemy->gun);
+    free(enemy);
+}

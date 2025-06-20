@@ -55,12 +55,42 @@ void avança_bala(struct bala *bullet, int velocidade){
     bullet->y += (sin(bullet->angulo * (ALLEGRO_PI / 180.0))) * velocidade;
 }
 
-void atualiza_lista(struct arma *gun, int velocidade, int distancia_andada,int X_SCREEN, int Y_SCREEN){
+void atualiza_lista(struct arma *gun, struct obstacle estruturas[], int velocidade, int distancia_andada, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
     struct bala *atual = gun->primeira_bala;
     struct bala *anterior = NULL;
+    struct obstacle temp;
+    int obs_tela1, obs_tela2, x1, x2, y1, y2, x3, x4, y3, y4;
+    bool colidiu;
     while(atual != NULL){
         avança_bala(atual, velocidade);
-        if(atual->x < 0+distancia_andada || atual->x > X_SCREEN+distancia_andada || atual->y < 0 || atual->y > Y_SCREEN){
+        colidiu = 0;
+        for(int i=0;i<MAX_OBSTACULOS;i++){
+            obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
+            obs_tela2 = estruturas[i].x2 - distancia_andada;
+            if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
+                temp.x1 = estruturas[i].x1;
+                temp.x2 = estruturas[i].x2;
+                temp.y1 = estruturas[i].y1;
+                temp.y2 = estruturas[i].y2;
+                x1 = atual->x;
+                x2 =  7;
+                y1 =  atual->y;
+                y2 = 7;
+                if(colide_x(x1, y1, x2, y2, temp))
+                    colidiu = 1;
+                if(estruturas[i].inimigo){
+                    x3 = estruturas[i].enemy->x;
+                    x4 = x3 + 67;
+                    y3 = estruturas[i].enemy->y;
+                    y4 = y3 + 80;
+                    if(colide_bala_x(x1, y1, x2, y2, x3, x4, y3, y4)){
+                        estruturas[i].enemy->vida--;
+                        colidiu = 1;
+                    }
+                }
+            }
+        }
+        if(atual->x < 0+distancia_andada || atual->x > X_SCREEN+distancia_andada || atual->y < 0 || atual->y > Y_SCREEN || colidiu){
             struct bala *remover = atual;
             if(anterior == NULL){ //primeira
                 atual = atual->proxima;

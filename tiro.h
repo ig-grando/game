@@ -26,7 +26,7 @@ void atirou(int x, int y, int angulo, float cooldown, struct arma *gun);
 
 void avança_bala(struct bala *bullet, int velocidade);
 
-void atualiza_lista(struct arma *gun, int velocidade, int distancia_andada, int X_SCREEN, int Y_SCREEN);
+void atualiza_lista(struct arma *gun, struct obstacle estruturas[], int velocidade, int distancia_andada, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN);
 
 void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int velocidade, int distancia_andada,int X_SCREEN, int Y_SCREEN);
 

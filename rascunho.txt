@@ -3,18 +3,37 @@ gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 al
 
 O pé do boneco está em y
 
-Colocar os inimigos.
+Polir um pouco:
+    Colocar expolsão ao destruir
+    Pause
+    Animação completa atirando
+    Transforamr os blocos cinzas na PNG do prédio.
+    Reduzir a hitbox do boneco para ele cair antes.
 
-Mudar a tela de MORTE para voltar
-Transforamr os blocos cinzas na PNG do prédio.
-Reduzir a hitbox do boneco para ele cair antes.
+Colocar o chefe
 
 
 
-Problemas consertados:
+Problemas consertados e como:
 
 Quando meu boneco andava para frente as balas dos inimigos ficavam paradas por causa do movimento do cenário.
-Para resolver isso tive que considerar que as balas do meu boneco saiam de personagem.x + distancia andada e os dos oponentes de suas posições padrão.
+    Para resolver isso tive que considerar que as balas do meu boneco saiam de personagem.x + distancia andada e os dos oponentes de suas posições padrão.
 
 A vida do meu boneco não decrementava ao tomar hit.
-Para resolver isso tive só que passar o personagem como referência.
+    Para resolver isso tive só que passar o personagem como referência.
+
+Como estão x e y?
+    O boneco fica locado em x, porém todas as balas e estruturas estão com valores arbitrarios e longe da tela, 
+    assim as vezes preciso somar distancia_andada ou subtarir (para ver se está na tela).
+
+Por que tem colisão das balas do boneco mas não dos inimigos?
+    Quando eu gero as estruturas devo gerar os inimigos, pois estão associados, dessa forma só loopo uma vez e detecto se colide com o personagem.
+    Já para a colisão dos tiros do boneco devo loopar sobre todos os inimigos, ou seja, as estruturas e aproveito e testo a colisão ali.
+
+
+
+Concluido:
+Mudar a tela de MORTE para voltar
+Colocar inimigos
+Colocar colisões
+Matar inimigos

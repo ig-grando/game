@@ -156,13 +156,19 @@ void desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, struct obstacle estrutur
                 struct inimigo *temp;
                 temp = estruturas[i].enemy;
                 enemy_tela1 = temp->x - distancia_andada;
-                //al_draw_filled_rectangle(enemy_tela1, temp->y, enemy_tela2, temp->y+100, al_map_rgb(255, 0, 0));
-                desenha_inimigo_parado(sprite_inimigo, enemy_tela1, temp->y, temp->atirando, sprite);
-                temp->gun->cooldown -= delta;
-                desenha_bala(temp->gun, distancia_andada, 1);
-                if(temp->gun->cooldown <= 0)
-                    atirou(temp->x, temp->y+70, 180, 1.5, temp->gun);
-                atualiza_lista_inimigo(temp->gun, personagem, velocidade*delta*1.2, distancia_andada, X_SCREEN, Y_SCREEN);
+                //al_draw_filled_rectangle(enemy_tela1, temp->y, enemy_tela1+67, temp->y+88, al_map_rgb(255, 0, 0));
+                if(temp->vida <= 0){
+                    destroi_inimigo(temp);
+                    estruturas[i].inimigo = 0;
+                }
+                else{
+                    desenha_inimigo_parado(sprite_inimigo, enemy_tela1, temp->y, temp->atirando, sprite);
+                    temp->gun->cooldown -= delta;
+                    desenha_bala(temp->gun, distancia_andada, 1);
+                    if(temp->gun->cooldown <= 0)
+                        atirou(temp->x, temp->y+70, 180, 1.5, temp->gun);
+                    atualiza_lista_inimigo(temp->gun, personagem, velocidade*delta*1.2, distancia_andada, X_SCREEN, Y_SCREEN);
+                }
             }   
         }
     }
