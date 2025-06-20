@@ -263,7 +263,10 @@ int main(){
                                 tela = CONFIG;
                             break;
                             case JOGO:
-                                tela = CONFIG;
+                                tela = PAUSE;
+                            break;
+                            case PAUSE:
+                                tela = JOGO;
                             break;
                             case LOADING:
                                 tela = MENU;
@@ -315,6 +318,14 @@ int main(){
                     break;
                     case JOGO:
                         personagem.atirando = 1;
+                    break;
+                    case PAUSE:
+                        if(mouse_no_botao(font_base, "Continuar", X_SCREEN*0.4, Y_SCREEN/2, event.mouse.x, event.mouse.y))
+                            tela = JOGO;
+                        if(mouse_no_botao(font_base, "Menu Principal", X_SCREEN*0.6, Y_SCREEN/2, event.mouse.x, event.mouse.y)){
+                            personagem = reseta_game(personagem, estruturas, &distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                            tela = MENU;
+                        }
                     break;
                 }      
             break;
@@ -369,7 +380,7 @@ int main(){
                     atualiza_lista(gun, estruturas, velocidade*delta*3, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                     //printf("VIDA krl: %d\n", personagem.vida);
                     if(personagem.vida <= 0){
-                        personagem = reseta_game(personagem, estruturas, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = MORTE;
                     }
@@ -381,9 +392,15 @@ int main(){
                     al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Carregando...");
                 break;
+                case PAUSE:
+                    al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.4, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Continuar");
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.6, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Menu Principal");
+                break;
                 case MORTE:
                     al_clear_to_color(al_map_rgb(0, 0, 0));
-                    al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Skill Issue?");
+                    al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.45, ALLEGRO_ALIGN_CENTER, "Skill Issue?");
+                    al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.55, ALLEGRO_ALIGN_CENTER, "Pressione ESCAPE para voltar ao MENU");
                 break;
             }
             al_flip_display();

@@ -4,15 +4,23 @@ gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 al
 O pé do boneco está em y
 
 Polir um pouco:
-    Colocar expolsão ao destruir
-    Pause
-    Animação completa atirando
+    Pressione ESCAPE para voltar ao menu
     Transforamr os blocos cinzas na PNG do prédio.
     Reduzir a hitbox do boneco para ele cair antes.
 
+Desenhar objetivos canto da tela
 Colocar o chefe
+Dificuldade(muda a vida)
 
 
+Concluido:
+Mudar a tela de MORTE para voltar
+Colocar inimigos
+Colocar colisões
+Matar inimigos
+Colocar explosão ao destruir
+Pause
+Animação completa atirando.
 
 Problemas consertados e como:
 
@@ -29,11 +37,3 @@ Como estão x e y?
 Por que tem colisão das balas do boneco mas não dos inimigos?
     Quando eu gero as estruturas devo gerar os inimigos, pois estão associados, dessa forma só loopo uma vez e detecto se colide com o personagem.
     Já para a colisão dos tiros do boneco devo loopar sobre todos os inimigos, ou seja, as estruturas e aproveito e testo a colisão ali.
-
-
-
-Concluido:
-Mudar a tela de MORTE para voltar
-Colocar inimigos
-Colocar colisões
-Matar inimigos

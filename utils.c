@@ -156,12 +156,13 @@ void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCR
     }
 }
 
-struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
     personagem.x = X_SCREEN/2;
     personagem.y = Y_SCREEN/2;
     personagem.velocidade_y = 0;
     personagem.chao = 1;
     personagem.vida = 3;
+    *distancia_andada = 0;
     gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
     return personagem;
 }
