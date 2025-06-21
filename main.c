@@ -87,6 +87,10 @@ int main(){
     ALLEGRO_BITMAP *sprite_inimigo1 = al_load_bitmap("usaveis/inimigo1.png");
     verifica_init(sprite_sheet, "usaveis/inimigo1.png");
 
+    ALLEGRO_BITMAP *coracao_cheio = al_load_bitmap("usaveis/heart-full.png");
+    verifica_init(coracao_cheio, "usaveis/heart-full.png");
+
+
     ALLEGRO_BITMAP *cursor = al_load_bitmap("usaveis/cursor.png");
     verifica_init(fundo_menu, "usaveis/cursor.png");
 
@@ -259,55 +263,34 @@ int main(){
                     double now_delta = al_get_time();
                     delta = now_delta - start_delta; //tempo em segundos de um quadro a outro IRL, independe do FPS
                     start_delta = now_delta;
-    //printf("FPS: %f\n", 1.0/delta);
+                    //printf("FPS: %f\n", 1.0/delta);
             break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
                 key[event.keyboard.keycode] = KEY_SEEN | KEY_DOWN; //faz operação OU bit a bit, então ambos estão ativos (vista e pressionada)
-                //colocar um if se estiver no game para dar
                 switch(event.keyboard.keycode){
                     case ALLEGRO_KEY_ESCAPE:
                         switch(tela){
-                            case MENU:
-                                sair = 1;
-                            break;
-                            case CONFIG:
-                                tela = MENU;
-                            break;
-                            case VIDEO:
-                                tela = CONFIG;
-                            break;
-                            case AUDIO:
-                                tela = CONFIG;
-                            break;
-                            case CONTROLE:
-                                tela = CONFIG;
-                            break;
-                            case JOGO:
-                                tela = PAUSE;
-                            break;
-                            case PAUSE:
-                                tela = JOGO;
-                            break;
-                            case LOADING:
-                                tela = MENU;
-                            break;
-                            case MORTE:
-                                tela = MENU;
-                            break;
-                            case VENCEU:
-                                tela = MENU;
-                            break;
-                            case BOSS:
-                                tela = PAUSE;
-                            break;
+                            case MENU:      sair = 1; break;
+                            case CONFIG:    tela = MENU; break;
+                            case VIDEO:     tela = CONFIG; break;
+                            case AUDIO:     tela = CONFIG; break;
+                            case CONTROLE:  tela = CONFIG; break;
+                            case JOGO:      tela = PAUSE; break;
+                            case PAUSE:     tela = JOGO; break;
+                            case LOADING:   tela = MENU; break;
+                            case MORTE:     tela = MENU; break;
+                            case VENCEU:    tela = MENU; break;
+                            case BOSS:      tela = PAUSE; break;
                         }
                     break;
                 }
             break;
+
             case ALLEGRO_EVENT_KEY_UP:
                 key[event.keyboard.keycode] &= ~KEY_DOWN; //fica 000... nenhum ativo
             break;
+
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 switch(tela){
                     case MENU:
@@ -360,9 +343,11 @@ int main(){
                     break;
                 }      
             break;
+
             case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
                 if(tela == JOGO || tela == BOSS) personagem.atirando = 0;
             break;
+
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 sair = 1;
             break;
@@ -378,7 +363,7 @@ int main(){
                 al_toggle_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, 0);
             }
     
-    aplicar = 0;
+            aplicar = 0;
         }
         if(quadro && al_is_event_queue_empty(fila)){
             al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -433,6 +418,7 @@ int main(){
                         distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
+                    desenha_heart(coracao_cheio, personagem.vida, X_SCREEN, Y_SCREEN);
                     if(inimigos_mortos < 1)
                         al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
                     else{
@@ -466,6 +452,7 @@ int main(){
                     al_draw_filled_rectangle(X_SCREEN*0.225, Y_SCREEN*0.955, X_SCREEN*0.225+largura_vida, Y_SCREEN*0.965, al_map_rgb(255, 0, 0));
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate o final boss");
+                    desenha_heart(coracao_cheio, personagem.vida, X_SCREEN, Y_SCREEN);
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
@@ -506,6 +493,7 @@ int main(){
     al_destroy_bitmap(fundo2.bitmap);
     al_destroy_bitmap(fundo3.bitmap);
     al_destroy_bitmap(predio);
+    al_destroy_bitmap(coracao_cheio);
     al_destroy_bitmap(cursor);
     al_destroy_event_queue(fila);
     return 0;

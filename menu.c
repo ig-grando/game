@@ -145,6 +145,15 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     
 }
 
+void desenha_heart(ALLEGRO_BITMAP *coracao_cheio, int vida_atual, int x_screen, int y_screen){
+    int y = y_screen*0.01;
+    int x = x_screen;
+    for(int i=0;i<vida_atual;i++){
+        x -= x_screen*0.03;
+        al_draw_bitmap(coracao_cheio, x, y, 0);
+    }
+}
+
 void desenha_bala(struct arma *gun, int distancia_andada, int inimigo){
     struct bala *bullet;
     if(!gun->primeira_bala) return;

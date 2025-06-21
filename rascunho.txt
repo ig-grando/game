@@ -6,10 +6,12 @@ O pé do boneco está em y
 Polir um pouco:
     Transforamr os blocos cinzas na PNG do prédio.
     Animar inimigos
+    Colocar sprite na bala do personagem.
     Reduzir a hitbox do boneco para ele cair antes.
 
 Colocar o chefe
 Dificuldade(muda a vida e aumenta a quantidade de inimigos a matar)
+Fazer o makefile certo
 
 
 Concluido:
@@ -27,6 +29,7 @@ Colisão com o boss
 Loading final(falso)
 Desenhar objetivos canto da tela
 Destruir inimigos não mortos
+Colocar corações boneco
 
 Problemas consertados e como:
 
