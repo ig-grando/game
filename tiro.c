@@ -141,13 +141,20 @@ void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int vel
 }
 
 
-void atualiza_lista_boss_fight(struct arma *gun, int velocidade, int X_SCREEN, int Y_SCREEN){
+void atualiza_lista_boss_fight(struct arma *gun, struct inimigo *boss, int velocidade, int altura_boss, int largura_boss, int X_SCREEN, int Y_SCREEN){
     struct bala *atual = gun->primeira_bala;
     struct bala *anterior = NULL;
-    bool atinge;
+    int largura_bala, altura_bala;
+    largura_bala = altura_bala = 7;
+    bool atinge = 0;
     while(atual != NULL){
+        atinge = 0;
         avança_bala(atual, velocidade);
-        if(atual->x < 0 || atual->x > X_SCREEN || atual->y < 0 || atual->y > Y_SCREEN){
+        if(colide_bala_x(atual->x, atual->y, largura_bala, altura_bala, boss->x, boss->x+largura_boss, boss->y-altura_boss, boss->y)){
+            atinge = 1;
+            boss->vida--;
+        }
+        if(atual->x < 0 || atual->x > X_SCREEN || atual->y < 0 || atual->y > Y_SCREEN || atinge){
             struct bala *remover = atual;
             if(anterior == NULL){ //primeira
                 atual = atual->proxima;

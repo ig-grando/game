@@ -57,7 +57,7 @@ ALLEGRO_DISPLAY *configura_display(ALLEGRO_DISPLAY *display, int X_SCREEN, int Y
 }
 
 
-struct inimigo *gera_inimigo(int x, int y){
+struct inimigo *gera_inimigo(int x, int y, int vida){
     struct inimigo *enemy = (struct inimigo *)malloc(sizeof(struct inimigo));
     if(!enemy)
     verifica_init(enemy, "inimigo");
@@ -65,35 +65,11 @@ struct inimigo *gera_inimigo(int x, int y){
     enemy->y = y;
     enemy->atirando=0;
     enemy->lado = 1;
-    enemy->vida = 5;
+    enemy->vida = vida;
     enemy->gun = inicia_arma();
     return enemy;
 }
 
-int altura_texto(ALLEGRO_FONT *fonte) {
-    int bbx, bby, bbw, bbh;
-    al_get_text_dimensions(fonte, "Ay", &bbx, &bby, &bbw, &bbh);
-    return bbh;
-}
-
-bool mouse_no_botao(ALLEGRO_FONT *fonte, const char *texto, int x, int y, int mouse_x, int mouse_y){
-    int altura = al_get_font_line_height(fonte);
-    int largura = al_get_text_width(fonte, texto);
-    return (mouse_x <= largura/2+x && mouse_x >= x-largura/2 
-        && mouse_y <= y+altura/2 && mouse_y >= y - altura/2);
-}
-
-
-void desenha_retangulo_option(ALLEGRO_FONT *fonte, const char *texto, int x, int y, struct coordenada *coord){
-    int altura_fonte =  altura_texto(fonte);
-    int x2 = (x - (al_get_text_width(fonte, texto)/2) - 10);
-    int x1 = x2 - altura_fonte;
-    int y2 =  y+altura_fonte;
-    int y1 = y;
-    coord->x = x1;
-    coord->y = y1;
-    al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(0, 0, 0), 3);
-}
 
 bool colide_bala_x(int personagem_x, int personagem_y, int largura, int altura, int x1, int x2, int y1, int y2){
     int personagem_direita = personagem_x + largura;
@@ -126,7 +102,7 @@ bool colide_y(int personagem_x, int personagem_y, int largura, int altura, struc
            personagem_topo <= predio.y2); //o sinal de igual resolve travar na plataforma
 }
 
-void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCREEN){
+void gera_estruturas(struct obstacle estruturas[], int vida, int MAX_OBSTACULOS, int Y_SCREEN){
     int altura;
     int x_inimigo;
     unsigned int inimigo;
@@ -150,13 +126,13 @@ void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCR
         //printf("Inimigo %d\n", inimigo);
         if(inimigo == 0){
             estruturas[i].inimigo = 1;
-            estruturas[i].enemy = gera_inimigo(x_inimigo, estruturas[i].y1-100);
+            estruturas[i].enemy = gera_inimigo(x_inimigo, estruturas[i].y1-100, vida);
         }
         else estruturas[i].inimigo = 0;
     }
 }
 
-struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int vida, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
     personagem.x = X_SCREEN/2;
     personagem.y = Y_SCREEN/2;
     personagem.velocidade_y = 0;
@@ -164,7 +140,7 @@ struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[]
     personagem.vida = 3;
     *distancia_andada = 0;
     *inimigos_mortos = 0;
-    gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
+    gera_estruturas(estruturas, vida, MAX_OBSTACULOS, Y_SCREEN);
     return personagem;
 }
 
@@ -182,4 +158,30 @@ struct obstacle estrutura_boss_fight(int X_SCREEN, int Y_SCREEN){
 void destroi_inimigo(struct inimigo *enemy){
     destroi_arma(enemy->gun);
     free(enemy);
+}
+
+
+int altura_texto(ALLEGRO_FONT *fonte) {
+    int bbx, bby, bbw, bbh;
+    al_get_text_dimensions(fonte, "Ay", &bbx, &bby, &bbw, &bbh);
+    return bbh;
+}
+
+bool mouse_no_botao(ALLEGRO_FONT *fonte, const char *texto, int x, int y, int mouse_x, int mouse_y){
+    int altura = al_get_font_line_height(fonte);
+    int largura = al_get_text_width(fonte, texto);
+    return (mouse_x <= largura/2+x && mouse_x >= x-largura/2 
+        && mouse_y <= y+altura/2 && mouse_y >= y - altura/2);
+}
+
+
+void desenha_retangulo_option(ALLEGRO_FONT *fonte, const char *texto, int x, int y, struct coordenada *coord){
+    int altura_fonte =  altura_texto(fonte);
+    int x2 = (x - (al_get_text_width(fonte, texto)/2) - 10);
+    int x1 = x2 - altura_fonte;
+    int y2 =  y+altura_fonte;
+    int y1 = y;
+    coord->x = x1;
+    coord->y = y1;
+    al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(0, 0, 0), 3);
 }

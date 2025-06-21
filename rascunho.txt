@@ -4,8 +4,7 @@ gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 al
 O pé do boneco está em y
 
 Polir um pouco:
-    destruir inimigos não mortos
-    Pressione ESCAPE para voltar ao menu
+    Destruir inimigos não mortos
     Transforamr os blocos cinzas na PNG do prédio.
     Reduzir a hitbox do boneco para ele cair antes.
 
@@ -22,6 +21,8 @@ Matar inimigos
 Colocar explosão ao destruir
 Pause
 Animação completa atirando.
+Gerar estutura boss.
+Deixar o personagem livre
 
 Problemas consertados e como:
 
