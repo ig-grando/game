@@ -33,12 +33,22 @@ struct inimigo{
     int y;
     int lado;
     unsigned int vida;
-    bool atirando;
+    int atirando;
 };
 
 struct tela{
     int X_SCREEN;
     int Y_SCREEN;
+};
+
+
+struct obstacle{
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+    bool inimigo;
+    struct inimigo *enemy;
 };
 
 struct fundo{
@@ -48,13 +58,12 @@ struct fundo{
     int scroll_offset;
 };
 
-struct obstacle{
-    int x1;
-    int x2;
-    int y1;
-    int y2;
-    bool inimigo;
-    struct inimigo *enemy;
+struct conjunto_sprites_boss{
+    ALLEGRO_BITMAP *parado;
+    ALLEGRO_BITMAP *andando;
+    ALLEGRO_BITMAP *desliza;
+    ALLEGRO_BITMAP *atirando;
+    ALLEGRO_BITMAP *atirando_cima;
 };
 
 void verifica_init(bool flag, const char *string);

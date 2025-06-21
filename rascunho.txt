@@ -2,8 +2,14 @@ Para rodar:
 gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 --libs --cflags) -lallegro_font -lallegro_ttf
 
 O pé do boneco está em y
+Boss = 89 x 73
+Boss = 89 x 73
+Boss = 97 x 73
+subindo : 188 x 91 
+descendo 190 x 76
 
 Polir um pouco:
+    destruir bitmaps
     Transforamr os blocos cinzas na PNG do prédio.
     Animar inimigos
     Colocar sprite na bala do personagem.

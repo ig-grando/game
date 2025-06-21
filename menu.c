@@ -11,6 +11,7 @@
 #include "tiro.h"
 
 #define PIXEL 8
+#define PIXEL_BOSS 7.75
 
 
 void desenha_arma_rotacionada(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite, int flag){
@@ -145,6 +146,21 @@ void desenha_boneco_pulando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
     
 }
 
+void desenha_boss_parado(struct inimigo *final_boss, struct conjunto_sprites_boss sprites_boss, int altura_boss, int largura_boss, int sprite){
+    if(final_boss->lado)
+        al_draw_scaled_bitmap(sprites_boss.parado, sprite*89, 0, 89, 73, final_boss->x, final_boss->y-altura_boss+10, largura_boss, altura_boss, ALLEGRO_FLIP_HORIZONTAL);
+    else
+        al_draw_scaled_bitmap(sprites_boss.parado, PIXEL/2, PIXEL/2, 11*PIXEL_BOSS, 9*PIXEL_BOSS, final_boss->x, final_boss->y-altura_boss+10, largura_boss, altura_boss, 0);
+
+}
+
+void desenha_boss_andando(struct inimigo *final_boss, struct conjunto_sprites_boss sprites_boss, int altura_boss, int largura_boss, int sprite){
+    if(final_boss->lado)
+        al_draw_scaled_bitmap(sprites_boss.andando, sprite*89, 0, 89, 73, final_boss->x, final_boss->y-altura_boss+10, largura_boss, altura_boss, ALLEGRO_FLIP_HORIZONTAL);
+    else
+        al_draw_scaled_bitmap(sprites_boss.andando, PIXEL/2, PIXEL/2, 11*PIXEL_BOSS, 9*PIXEL_BOSS, final_boss->x, final_boss->y-altura_boss+10, largura_boss, altura_boss, 0);
+}
+
 void desenha_heart(ALLEGRO_BITMAP *coracao_cheio, int vida_atual, int x_screen, int y_screen){
     int y = y_screen*0.01;
     int x = x_screen;
@@ -154,17 +170,19 @@ void desenha_heart(ALLEGRO_BITMAP *coracao_cheio, int vida_atual, int x_screen, 
     }
 }
 
-void desenha_bala(struct arma *gun, int distancia_andada, int inimigo){
+void desenha_bala(struct arma *gun, int distancia_andada, int bala){
     struct bala *bullet;
     if(!gun->primeira_bala) return;
     bullet = gun->primeira_bala;
     while(bullet != NULL){
         int x = bullet->x-distancia_andada;
         int y = bullet->y;
-        if(!inimigo)
+        if(bala == 0)
             al_draw_filled_rectangle(x, y, x+7, y+7, al_map_rgb(255, 125, 250));
-        else
+        else if(bala == 1)
             al_draw_filled_circle(x, y, 5, al_map_rgb(255, 255, 0));
+        else
+            al_draw_filled_rectangle(x, y, x+20, y+7, al_map_rgb(0, 0, 150));
         bullet = bullet->proxima;
     }
 }
@@ -287,12 +305,14 @@ int desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle es
     return inimigos_mortos;
 }
 
-void desenha_boss(struct arma *gun, struct boneco *personagem, struct inimigo *final_boss, struct obstacle estrutura_boss, ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *sprite_sheet, 
-    int sprite, int altura_boss, int largura_boss, int X_SCREEN, int Y_SCREEN){
+void desenha_boss(struct arma *gun, struct boneco *personagem, struct inimigo *final_boss, struct obstacle estrutura_boss, struct conjunto_sprites_boss sprites_boss,
+    ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *sprite_sheet,  int sprite, int altura_boss, int largura_boss, int X_SCREEN, int Y_SCREEN){
     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_filled_rectangle(estrutura_boss.x1, estrutura_boss.y1, estrutura_boss.x2, estrutura_boss.y2, al_map_rgb(148, 122, 84)); //predio
     al_draw_filled_rectangle(final_boss->x, final_boss->y, final_boss->x+largura_boss, final_boss->y-altura_boss, al_map_rgb(255, 0 , 0)); //boss
+    desenha_boss_andando(final_boss, sprites_boss, altura_boss, largura_boss, sprite/5);
     desenha_bala(gun, 0, 0);
+    desenha_bala(final_boss->gun, 0, 2);
     if(!personagem->chao)
         desenha_boneco_pulando(sprite_sheet, *personagem, sprite/5);
     else{
