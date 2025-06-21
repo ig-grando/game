@@ -4,13 +4,14 @@ gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 al
 O pé do boneco está em y
 
 Polir um pouco:
+    destruir inimigos não mortos
     Pressione ESCAPE para voltar ao menu
     Transforamr os blocos cinzas na PNG do prédio.
     Reduzir a hitbox do boneco para ele cair antes.
 
 Desenhar objetivos canto da tela
 Colocar o chefe
-Dificuldade(muda a vida)
+Dificuldade(muda a vida e aumenta a quantidade de inimigos a matar)
 
 
 Concluido:

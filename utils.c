@@ -156,15 +156,27 @@ void gera_estruturas(struct obstacle estruturas[], int MAX_OBSTACULOS, int Y_SCR
     }
 }
 
-struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
     personagem.x = X_SCREEN/2;
     personagem.y = Y_SCREEN/2;
     personagem.velocidade_y = 0;
     personagem.chao = 1;
     personagem.vida = 3;
     *distancia_andada = 0;
+    *inimigos_mortos = 0;
     gera_estruturas(estruturas, MAX_OBSTACULOS, Y_SCREEN);
     return personagem;
+}
+
+struct obstacle estrutura_boss_fight(int X_SCREEN, int Y_SCREEN){
+    struct obstacle estrutura_boss;
+    estrutura_boss.x1 = 0;
+    estrutura_boss.x2 = X_SCREEN;
+    estrutura_boss.y1 = Y_SCREEN*0.90;
+    estrutura_boss.y2 = Y_SCREEN;
+    estrutura_boss.inimigo = 0;
+    estrutura_boss.enemy = NULL;
+    return estrutura_boss;
 }
 
 void destroi_inimigo(struct inimigo *enemy){

@@ -29,6 +29,7 @@
 #define PAUSE 6
 #define LOADING 7
 #define MORTE 8
+#define BOSS 9
 
 
 
@@ -116,6 +117,7 @@ int main(){
     gun = inicia_arma();
     //struct bala *bullet_aux;
 
+    struct obstacle estrutura_boss;
     struct obstacle estruturas[MAX_OBSTACULOS];
     estruturas[0].x1 = X_SCREEN/2 -100;
     estruturas[0].y1 = Y_SCREEN*0.7;
@@ -127,6 +129,7 @@ int main(){
 
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
+    int inimigos_mortos = 0;
     unsigned char quadro=0, sair=0;
     unsigned int tela = MENU; //começa no menu
     unsigned int resolucao = 1;
@@ -145,7 +148,7 @@ int main(){
         al_wait_for_event(fila, &event);
         switch(event.type){
             case ALLEGRO_EVENT_TIMER:
-                if(tela ==  JOGO){
+                if(tela == JOGO || tela == BOSS){
                     personagem.abaixado = 0;
                     personagem.altura = ALTURA_PERSONAGEM;
                     personagem.direcao = 0;
@@ -188,27 +191,33 @@ int main(){
                     prox_y =  personagem.y + personagem.velocidade_y * delta;
                     struct obstacle temp;
                     pode_andar_x = pode_andar_y = 1;
-                    for(int i=0;i<MAX_OBSTACULOS;i++){
-                        obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
-                        obs_tela2 = estruturas[i].x2 - distancia_andada;
-                        if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
-                            temp.x1 = obs_tela1;
-                            temp.x2 = obs_tela2;
-                            temp.y1 = estruturas[i].y1;
-                            temp.y2 = estruturas[i].y2;
-                            if(colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
-                                pode_andar_x = 0;
-                            }
-                            if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
-                                pode_andar_y = 0;
-                                altura_colide = temp.y1;
+                    if(tela == JOGO){
+                        for(int i=0;i<MAX_OBSTACULOS;i++){
+                            obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
+                            obs_tela2 = estruturas[i].x2 - distancia_andada;
+                            if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
+                                temp.x1 = obs_tela1;
+                                temp.x2 = obs_tela2;
+                                temp.y1 = estruturas[i].y1;
+                                temp.y2 = estruturas[i].y2;
+                                if(colide_x(prox_x, personagem.y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                                    pode_andar_x = 0;
+                                }
+                                if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, temp)){
+                                    pode_andar_y = 0;
+                                    altura_colide = temp.y1;
+                                }
                             }
                         }
                     }
+                    if(tela == BOSS)
+                        if(colide_y(personagem.x, prox_y, LARGURA_PERSONAGEM, ALTURA_PERSONAGEM, estrutura_boss)){
+                            pode_andar_y = 0;
+                            altura_colide = estrutura_boss.y1;
+                        }
                     if(pode_andar_x){
                         personagem.x = prox_x;
                         distancia_andada += personagem.direcao * velocidade_geral;
-                        //printf("Distancia: %d\n", distancia_andada);
                         fundo3.scroll_x -= personagem.direcao * velocidade_geral*1.2;
                         fundo2.scroll_x -= personagem.direcao * velocidade_geral/2;
                         fundo1.scroll_x -= personagem.direcao * velocidade_geral/4;
@@ -226,8 +235,10 @@ int main(){
                     }
                     
                     if(!personagem.chao) personagem.velocidade_y += gravidade * delta; //para competir com o pulo, vai acumulando gravidade
-                    personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
+                    if(tela == JOGO)
+                        personagem.x = X_SCREEN/2-LARGURA_PERSONAGEM;
                     if(personagem.x <= 0)personagem.x = 0;
+                    if(personagem.x >= X_SCREEN)personagem.x = X_SCREEN;
                     //personagem.y += personagem.velocidade_y * delta; 
                     if(personagem.y >= Y_SCREEN) personagem.vida = 0;
                     if(abs(scroll_X1) >= X_SCREEN) scroll_X1 = 0;
@@ -273,6 +284,10 @@ int main(){
                             break;
                             case MORTE:
                                 tela = MENU;
+                            break;
+                            case BOSS:
+                                tela = PAUSE;
+                            break;
                         }
                     break;
                 }
@@ -319,18 +334,21 @@ int main(){
                     case JOGO:
                         personagem.atirando = 1;
                     break;
+                    case BOSS:
+                        personagem.atirando = 1;
+                    break;
                     case PAUSE:
                         if(mouse_no_botao(font_base, "Continuar", X_SCREEN*0.4, Y_SCREEN/2, event.mouse.x, event.mouse.y))
                             tela = JOGO;
                         if(mouse_no_botao(font_base, "Menu Principal", X_SCREEN*0.6, Y_SCREEN/2, event.mouse.x, event.mouse.y)){
-                            personagem = reseta_game(personagem, estruturas, &distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                            personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                             tela = MENU;
                         }
                     break;
                 }      
             break;
             case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-                if(tela == JOGO) personagem.atirando = 0;
+                if(tela == JOGO || tela == BOSS) personagem.atirando = 0;
             break;
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 sair = 1;
@@ -368,9 +386,18 @@ int main(){
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
                 break;
                 case JOGO:
-                    desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
+                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
                         distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
+                    if(inimigos_mortos < 1)
+                        al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
+                    else{
+                        estrutura_boss = estrutura_boss_fight(X_SCREEN, Y_SCREEN);
+                        tela = BOSS;
+                        personagem.y = 100;
+                        personagem.chao = 0;
+                    }
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;
@@ -378,9 +405,8 @@ int main(){
                         atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun); //somo a distancia para a coordenanda da bala ficar certa
                     }
                     atualiza_lista(gun, estruturas, velocidade*delta*3, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
-                    //printf("VIDA krl: %d\n", personagem.vida);
                     if(personagem.vida <= 0){
-                        personagem = reseta_game(personagem, estruturas, &distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = MORTE;
                     }
@@ -401,6 +427,21 @@ int main(){
                     al_clear_to_color(al_map_rgb(0, 0, 0));
                     al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.45, ALLEGRO_ALIGN_CENTER, "Skill Issue?");
                     al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.55, ALLEGRO_ALIGN_CENTER, "Pressione ESCAPE para voltar ao MENU");
+                break;
+                case BOSS:
+                    desenha_boss(gun, &personagem, estrutura_boss, fundo_menu, sprite_sheet, sprite, X_SCREEN, Y_SCREEN);
+                    sprite++;
+                    if(sprite >= 20) sprite = 0;
+                    gun->cooldown -= delta;
+                    if(personagem.atirando && gun->cooldown <= 0){
+                        atirou(personagem.x, personagem.y, personagem.angulo, 0.2, gun); //somo a distancia para a coordenanda da bala ficar certa
+                    }
+                    atualiza_lista_boss_fight(gun, velocidade*delta*3, X_SCREEN, Y_SCREEN);
+                    if(personagem.vida <= 0){
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        distancia_andada = 0;
+                        tela = MORTE;
+                    }
                 break;
             }
             al_flip_display();

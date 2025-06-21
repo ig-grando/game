@@ -160,10 +160,10 @@ void desenha_bala(struct arma *gun, int distancia_andada, int inimigo){
     }
 }
 
-void desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, struct obstacle estruturas[], struct boneco *personagem, 
+int desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, struct obstacle estruturas[], struct boneco *personagem, 
     int distancia_andada, double velocidade, double delta, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
 
-    int obs_tela1, obs_tela2, enemy_tela1;
+    int obs_tela1, obs_tela2, enemy_tela1, inimigos_mortos=0;
     for(int i=0;i<MAX_OBSTACULOS;i++){
         obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
         obs_tela2 = estruturas[i].x2 - distancia_andada;
@@ -182,6 +182,7 @@ void desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, struct obstacle estrutur
                     al_destroy_bitmap(explosion);
                     destroi_inimigo(temp);
                     estruturas[i].inimigo = 0;
+                    inimigos_mortos++;
                 }
                 else{
                     desenha_inimigo_parado(sprite_inimigo, enemy_tela1, temp->y, temp->atirando);
@@ -194,6 +195,7 @@ void desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, struct obstacle estrutur
             }   
         }
     }
+    return inimigos_mortos;
 }
 
 
@@ -235,10 +237,12 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
     
 }
 
-void desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, 
+int desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, 
     unsigned int sprite, int distancia_andada, double velocidade, double delta, int MAX_OBSTACULOS,int X_SCREEN, int Y_SCREEN){
     
-        fundo1.scroll_offset = fundo1.scroll_x % X_SCREEN;
+    int inimigos_mortos;
+    
+    fundo1.scroll_offset = fundo1.scroll_x % X_SCREEN;
     if (fundo1.scroll_offset > 0) fundo1.scroll_offset -= X_SCREEN; //Corrige casos em que o resto é positivo, garantindo que o offset seja sempre negativo, para quando andar para esquerda
     fundo2.scroll_offset = fundo2.scroll_x % X_SCREEN;
     if (fundo2.scroll_offset > 0) fundo2.scroll_offset -= X_SCREEN;
@@ -254,8 +258,31 @@ void desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle e
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), X_SCREEN + fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     
-    desenha_estruturas(sprite_inimigo, estruturas, personagem, distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+    inimigos_mortos = desenha_estruturas(sprite_inimigo, estruturas, personagem, distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
     desenha_bala(gun, distancia_andada, 0);
+    if(!personagem->chao)
+        desenha_boneco_pulando(sprite_sheet, *personagem, sprite/5);
+    else{
+        if(personagem->direcao){
+            if(personagem->abaixado)
+                desenha_boneco_abaixado_andando(sprite_sheet, *personagem, sprite/5);
+            else
+                desenha_boneco_andando(sprite_sheet, *personagem, sprite/5);
+        }
+        else
+            if(personagem->abaixado)
+                desenha_boneco_abaixado(sprite_sheet, *personagem, sprite/5);
+            else
+                desenha_boneco_parado(sprite_sheet, *personagem, sprite/5);
+    }
+    return inimigos_mortos;
+}
+
+void desenha_boss(struct arma *gun, struct boneco *personagem, struct obstacle estrutura_boss, ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *sprite_sheet, 
+    int sprite, int X_SCREEN, int Y_SCREEN){
+    al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
+    al_draw_filled_rectangle(estrutura_boss.x1, estrutura_boss.y1, estrutura_boss.x2, estrutura_boss.y2, al_map_rgb(148, 122, 84)); //predio
+    desenha_bala(gun, 0, 0);
     if(!personagem->chao)
         desenha_boneco_pulando(sprite_sheet, *personagem, sprite/5);
     else{

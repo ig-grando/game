@@ -140,6 +140,32 @@ void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int vel
     }
 }
 
+
+void atualiza_lista_boss_fight(struct arma *gun, int velocidade, int X_SCREEN, int Y_SCREEN){
+    struct bala *atual = gun->primeira_bala;
+    struct bala *anterior = NULL;
+    bool atinge;
+    while(atual != NULL){
+        avança_bala(atual, velocidade);
+        if(atual->x < 0 || atual->x > X_SCREEN || atual->y < 0 || atual->y > Y_SCREEN){
+            struct bala *remover = atual;
+            if(anterior == NULL){ //primeira
+                atual = atual->proxima;
+                gun->primeira_bala = atual;
+            }
+            else{
+                anterior->proxima = atual->proxima;
+                atual = atual->proxima;
+            }
+            destroi_bala(remover);
+        }
+        else{
+            anterior = atual;
+            atual = atual->proxima;
+        }
+    }
+}
+
 void destroi_bala(struct bala *bullet){
     free(bullet);
 }
