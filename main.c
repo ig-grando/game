@@ -149,6 +149,7 @@ int main(){
     bool tela_cheia = 1, aplicar = 0;
     double start_load, delta=1, velocidade = 400, gravidade = 1800, pulo = 700, velocidade_geral;
     double start_delta = al_get_time();
+    double now_load;
 
     unsigned char key[ALLEGRO_KEY_MAX]; //um indice do vetor para cada tecla, com máximo para todos as keys do Allegro
     memset(key, 0, sizeof(key)); //coloca 0 em todo o vetor
@@ -397,39 +398,19 @@ int main(){
                 case CONTROLE:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
                 break;
-                case JOGO:
-                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
-                        distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
-                    //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
-                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
-                    if(inimigos_mortos < 6)
-                        al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
-                    else{
-                        estrutura_boss = estrutura_boss_fight(X_SCREEN, Y_SCREEN);
-                        final_boss = gera_inimigo(X_SCREEN*0.8, Y_SCREEN*0.9, 100);
-                        tela = BOSS;
-                        personagem.y = 100;
-                        personagem.chao = 0;
-                    }
-                    sprite++;
-                    if(sprite >= 20) sprite = 0;
-                    gun->cooldown -= delta;
-                    if(personagem.atirando && gun->cooldown <= 0){
-                        atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun); //somo a distancia para a coordenanda da bala ficar certa
-                    }
-                    atualiza_lista(gun, estruturas, velocidade*delta*3, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
-                    if(personagem.vida <= 0){
-                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
-                        distancia_andada = 0;
-                        tela = MORTE;
-                    }
-                break;
                 case LOADING:
-                    double now_load = al_get_time();
+                    now_load = al_get_time();
                     if(now_load - start_load >= 1.5)
                         tela = JOGO;
                     al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Carregando...");
+                break;
+                case LOADING_2:
+                    now_load = al_get_time();
+                    if(now_load - start_load >= 1.0)
+                        tela = BOSS;
+                    al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN/2, ALLEGRO_ALIGN_CENTER, "Carregando a batalha...");
                 break;
                 case PAUSE:
                     al_draw_scaled_bitmap(fundo0, 0, 0, al_get_bitmap_width(fundo0), al_get_bitmap_height(fundo0), 0, 0, X_SCREEN, Y_SCREEN, 0);
@@ -447,12 +428,44 @@ int main(){
                     al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.50, ALLEGRO_ALIGN_CENTER, "Obrigado por jogar!");
                     al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.60, ALLEGRO_ALIGN_CENTER, "Pressione ESCAPE para voltar ao MENU");
                 break;
+                case JOGO:
+                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
+                        distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
+                    //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
+                    if(inimigos_mortos < 1)
+                        al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
+                    else{
+                        estrutura_boss = estrutura_boss_fight(X_SCREEN, Y_SCREEN);
+                        final_boss = gera_inimigo(X_SCREEN*0.8, Y_SCREEN*0.9, 100);
+                        tela = LOADING_2;
+                        personagem.y = 100;
+                        personagem.chao = 0;
+                        personagem.atirando = 0;
+                        start_load = al_get_time();
+                    }
+                    sprite++;
+                    if(sprite >= 20) sprite = 0;
+                    gun->cooldown -= delta;
+                    if(personagem.atirando && gun->cooldown <= 0){
+                        atirou(personagem.x+distancia_andada, personagem.y, personagem.angulo, 0.2, gun); //somo a distancia para a coordenanda da bala ficar certa
+                    }
+                    atualiza_lista(gun, estruturas, velocidade*delta*3, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                    if(personagem.vida <= 0){
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        distancia_andada = 0;
+                        tela = MORTE;
+                    }
+                break;
+
                 case BOSS:
                     desenha_boss(gun, &personagem, final_boss, estrutura_boss, fundo_menu, sprite_sheet, sprite, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
                     al_draw_filled_rectangle(X_SCREEN*0.2, Y_SCREEN*0.95, X_SCREEN*0.8, Y_SCREEN*0.97, al_map_rgb(0, 0, 0));
                     largura_total = (X_SCREEN*0.775) - (X_SCREEN*0.225);
                     largura_vida = largura_total * final_boss->vida / vida_max_boss;
                     al_draw_filled_rectangle(X_SCREEN*0.225, Y_SCREEN*0.955, X_SCREEN*0.225+largura_vida, Y_SCREEN*0.965, al_map_rgb(255, 0, 0));
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate o final boss");
                     sprite++;
                     if(sprite >= 20) sprite = 0;
                     gun->cooldown -= delta;

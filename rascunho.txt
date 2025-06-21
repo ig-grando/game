@@ -4,11 +4,10 @@ gcc -Wall -Wextra main.c $(pkg-config allegro-5 allegro_main-5 allegro_font-5 al
 O pé do boneco está em y
 
 Polir um pouco:
-    Destruir inimigos não mortos
     Transforamr os blocos cinzas na PNG do prédio.
+    Animar inimigos
     Reduzir a hitbox do boneco para ele cair antes.
 
-Desenhar objetivos canto da tela
 Colocar o chefe
 Dificuldade(muda a vida e aumenta a quantidade de inimigos a matar)
 
@@ -23,6 +22,11 @@ Pause
 Animação completa atirando.
 Gerar estutura boss.
 Deixar o personagem livre
+Barra de vida do boss
+Colisão com o boss
+Loading final(falso)
+Desenhar objetivos canto da tela
+Destruir inimigos não mortos
 
 Problemas consertados e como:
 

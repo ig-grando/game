@@ -133,6 +133,12 @@ void gera_estruturas(struct obstacle estruturas[], int vida, int MAX_OBSTACULOS,
 }
 
 struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int vida, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+    for(int i=1;i<MAX_OBSTACULOS;i++){
+        if(estruturas[i].inimigo){
+            destroi_arma(estruturas[i].enemy->gun);
+            free(estruturas[i].enemy);
+        } 
+    }
     personagem.x = X_SCREEN/2;
     personagem.y = Y_SCREEN/2;
     personagem.velocidade_y = 0;
