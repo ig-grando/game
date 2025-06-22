@@ -30,7 +30,7 @@
 #define CONFIG 1
 #define JOGO 2
 #define VIDEO 3
-#define AUDIO 4
+#define DIFICULDADE 4
 #define CONTROLE 5
 #define PAUSE 6
 #define LOADING 7
@@ -166,8 +166,10 @@ int main(){
     int scroll_X1, scroll_X2, scroll_X3, scroll_X4;
     scroll_X1 = scroll_X2 = scroll_X3 = scroll_X4 = 0;
     int inimigos_mortos = 0;
+    int inimigos_a_matar = 6;
     unsigned char quadro=0, sair=0;
     unsigned int tela = MENU; //começa no menu
+    unsigned int dificuldade = 1;
     unsigned int resolucao = 1;
     unsigned int sprite = 1;
     int distancia_andada = 0;
@@ -294,17 +296,16 @@ int main(){
                 switch(event.keyboard.keycode){
                     case ALLEGRO_KEY_ESCAPE:
                         switch(tela){
-                            case MENU:      sair = 1; break;
-                            case CONFIG:    tela = MENU; break;
-                            case VIDEO:     tela = CONFIG; break;
-                            case AUDIO:     tela = CONFIG; break;
-                            case CONTROLE:  tela = CONFIG; break;
-                            case JOGO:      tela = PAUSE; break;
-                            case PAUSE:     tela = JOGO; break;
-                            case LOADING:   tela = MENU; break;
-                            case MORTE:     tela = MENU; break;
-                            case VENCEU:    tela = MENU; break;
-                            case BOSS:      tela = PAUSE; break;
+                            case MENU:          sair = 1; break;
+                            case CONFIG:        tela = MENU; break;
+                            case VIDEO:         tela = CONFIG; break;
+                            case CONTROLE:      tela = CONFIG; break;
+                            case JOGO:          tela = PAUSE; break;
+                            case PAUSE:         tela = JOGO; break;
+                            case LOADING:       tela = MENU; break;
+                            case MORTE:         tela = MENU; break;
+                            case VENCEU:        tela = MENU; break;
+                            case BOSS:          tela = PAUSE; break;
                         }
                     break;
                 }
@@ -329,8 +330,8 @@ int main(){
                     case CONFIG:
                         if(mouse_no_botao(font_base, "Video", X_SCREEN/2, Y_SCREEN*0.35, event.mouse.x, event.mouse.y))
                             tela = VIDEO;
-                        if(mouse_no_botao(font_base, "Audio", X_SCREEN/2, Y_SCREEN*0.40, event.mouse.x, event.mouse.y))
-                            tela = AUDIO;
+                        if(mouse_no_botao(font_base, "Dificuladade", X_SCREEN/2, Y_SCREEN*0.40, event.mouse.x, event.mouse.y))
+                            tela = DIFICULDADE;
                         if(mouse_no_botao(font_base, "Controle", X_SCREEN/2, Y_SCREEN*0.45, event.mouse.x, event.mouse.y))
                             tela =  CONTROLE;
                         if(mouse_no_botao(font_base, "Voltar", X_SCREEN/2, Y_SCREEN*0.60, event.mouse.x, event.mouse.y))
@@ -350,6 +351,18 @@ int main(){
                         if(mouse_no_botao(font_base, "Voltar", X_SCREEN*0.55, Y_SCREEN*0.60, event.mouse.x, event.mouse.y))
                             tela = CONFIG;
                     break;
+                    case DIFICULDADE:
+                    if(mouse_no_botao(font_base, "Fácil", X_SCREEN/2, Y_SCREEN*0.35, event.mouse.x, event.mouse.y))
+                        dificuldade = 0;
+                    if(mouse_no_botao(font_base, "Médio", X_SCREEN/2, Y_SCREEN*0.40, event.mouse.x, event.mouse.y))
+                        dificuldade = 1;
+                    if(mouse_no_botao(font_base, "Difícil", X_SCREEN/2, Y_SCREEN*0.45, event.mouse.x, event.mouse.y))
+                        dificuldade = 2;
+                    if(mouse_no_botao(font_base, "Voltar", X_SCREEN*0.55, Y_SCREEN*0.60, event.mouse.x, event.mouse.y)){
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        tela = CONFIG;
+                    }
+                    break;
                     case JOGO:
                         personagem.atirando = 1;
                     break;
@@ -360,7 +373,7 @@ int main(){
                         if(mouse_no_botao(font_base, "Continuar", X_SCREEN*0.4, Y_SCREEN/2, event.mouse.x, event.mouse.y))
                             tela = JOGO;
                         if(mouse_no_botao(font_base, "Menu Principal", X_SCREEN*0.6, Y_SCREEN/2, event.mouse.x, event.mouse.y)){
-                            personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                            personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                             tela = MENU;
                         }
                     break;
@@ -400,8 +413,8 @@ int main(){
                 case VIDEO:
                     desenha_video(fundo_menu, check, font_base, X_SCREEN, Y_SCREEN, resolucao, tela_cheia);
                 break;
-                case AUDIO:
-                    al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                case DIFICULDADE:
+                    desenha_dificuladade(fundo_menu, check, font_base, X_SCREEN, Y_SCREEN, dificuldade);
                 break;
                 case CONTROLE:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
@@ -438,13 +451,13 @@ int main(){
                 break;
 
                 case JOGO:
-                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprites_balas, sprite, 
-                        distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
+                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprites_balas, predio, 
+                        sprite, distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
                     desenha_heart(coracao_cheio, personagem.vida, X_SCREEN, Y_SCREEN);
-                    if(inimigos_mortos < 6)
-                        al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
+                    if(inimigos_mortos < inimigos_a_matar)
+                        al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", inimigos_a_matar - inimigos_mortos);
                     else{
                         estrutura_boss = estrutura_boss_fight(X_SCREEN, Y_SCREEN);
                         final_boss = gera_inimigo(X_SCREEN*0.8, Y_SCREEN*0.9, vida_max_boss);
@@ -462,7 +475,7 @@ int main(){
                     }
                     atualiza_lista(gun, estruturas, velocidade*delta*3, distancia_andada, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                     if(personagem.vida <= 0){
-                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = MORTE;
                     }
@@ -472,9 +485,9 @@ int main(){
                     desenha_boss_fight(gun, &personagem, final_boss, estrutura_boss, sprites_boss, sprites_balas, fundo_menu, sprite_sheet,sprite, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
                     al_draw_filled_rectangle(X_SCREEN*0.2, Y_SCREEN*0.95, X_SCREEN*0.8, Y_SCREEN*0.97, al_map_rgb(0, 0, 0)); //barra preta
 
-                    largura_total = (X_SCREEN*0.775) - (X_SCREEN*0.225);
+                    largura_total = (X_SCREEN*0.790) - (X_SCREEN*0.210);
                     largura_vida = largura_total * final_boss->vida / vida_max_boss;
-                    al_draw_filled_rectangle(X_SCREEN*0.225, Y_SCREEN*0.955, X_SCREEN*0.225+largura_vida, Y_SCREEN*0.965, al_map_rgb(255, 0, 0)); //barra vermelha
+                    al_draw_filled_rectangle(X_SCREEN*0.210, Y_SCREEN*0.955, X_SCREEN*0.210+largura_vida, Y_SCREEN*0.965, al_map_rgb(255, 0, 0)); //barra vermelha
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate o final boss");
                     desenha_heart(coracao_cheio, personagem.vida, X_SCREEN, Y_SCREEN);
@@ -522,17 +535,15 @@ int main(){
                     }
                     atualiza_lista_boss_fight(gun, final_boss, velocidade*delta*3, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
                     atualiza_lista_inimigo(final_boss->gun, &personagem, velocidade*delta*1.2, 0, 16, 10, X_SCREEN, Y_SCREEN);
-
-
                     if(final_boss->vida <= 0){
                         destroi_arma(final_boss->gun);
                         free(final_boss);
-                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = VENCEU;
                     }
                     if(personagem.vida <= 0){
-                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = MORTE;
                     }
@@ -541,7 +552,6 @@ int main(){
             al_flip_display();
             quadro = 0;
             //al_clear_to_color(al_map_rgb(0, 0, 0));
-            
         }
     }
 

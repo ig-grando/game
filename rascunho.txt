@@ -9,12 +9,9 @@ subindo : 188 x 91
 descendo 190 x 76
 
 Polir um pouco:
-    destruir bitmaps
-    Transforamr os blocos cinzas na PNG do prédio.
     Animar inimigos
     Reduzir a hitbox do boneco para ele cair antes.
 
-Dificuldade(muda a vida e aumenta a quantidade de inimigos a matar)
 Fazer o makefile certo
 
 
@@ -37,6 +34,8 @@ Colocar corações boneco
 Colocar o chefe
 Colocar sprites balas do boss
 Colocar sprite na bala do personagem.
+Destruir bitmaps
+Transforamr os blocos cinzas na PNG do prédio.
 
 Problemas consertados e como:
 

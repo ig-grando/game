@@ -209,7 +209,7 @@ void desenha_bala(struct arma *gun, ALLEGRO_BITMAP *sprite_bala[], int distancia
     }
 }
 
-int desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, ALLEGRO_BITMAP *sprite_bala[], struct obstacle estruturas[], struct boneco *personagem, 
+int desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, ALLEGRO_BITMAP *sprite_bala[], ALLEGRO_BITMAP *predio, struct obstacle estruturas[], struct boneco *personagem, 
     int distancia_andada, int sprite, double velocidade, double delta, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
 
     int obs_tela1, obs_tela2, enemy_tela1, inimigos_mortos=0;
@@ -217,8 +217,9 @@ int desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, ALLEGRO_BITMAP *sprite_ba
         obs_tela1 = estruturas[i].x1 - distancia_andada; //valor convertido posição na tela
         obs_tela2 = estruturas[i].x2 - distancia_andada;
         if(obs_tela2 >= 0 && obs_tela1 <= X_SCREEN){
-            al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
-            //printf("inimigo: %d\n", estruturas[i].inimigo);
+            //al_draw_filled_rectangle(obs_tela1, estruturas[i].y1, obs_tela2, estruturas[i].y2, al_map_rgb(128, 128, 128)); //predio
+            al_draw_scaled_bitmap(predio, 0, 0, al_get_bitmap_width(predio), al_get_bitmap_height(predio),
+            obs_tela1, estruturas[i].y1, obs_tela2-obs_tela1, estruturas[i].y2-estruturas[i].y1, 0);
             if(estruturas[i].inimigo){
                 struct inimigo *temp;
                 temp = estruturas[i].enemy;
@@ -259,10 +260,26 @@ void desenha_menu(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SC
 void desenha_config(ALLEGRO_BITMAP *fundo_menu , ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN){
     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.35, ALLEGRO_ALIGN_CENTER, "Video");
-    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.40, ALLEGRO_ALIGN_CENTER, "Audio");
+    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.40, ALLEGRO_ALIGN_CENTER, "Dificuldade");
     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.45, ALLEGRO_ALIGN_CENTER, "Controle");
     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.60, ALLEGRO_ALIGN_CENTER, "Voltar");
     
+}
+
+void desenha_dificuladade(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN, unsigned int dificuldade){
+    struct coordenada coord0, coord1, coord2;
+    al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
+    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.35, ALLEGRO_ALIGN_CENTER, "Fácil");
+    desenha_retangulo_option(font_base, "Fácil", X_SCREEN/2, Y_SCREEN*0.35, &coord0);
+    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.40, ALLEGRO_ALIGN_CENTER, "Médio");
+    desenha_retangulo_option(font_base, "Médio", X_SCREEN/2, Y_SCREEN*0.40, &coord1);
+    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.45, ALLEGRO_ALIGN_CENTER, "Difícil");
+    desenha_retangulo_option(font_base, "Difícil", X_SCREEN/2, Y_SCREEN*0.45, &coord2);
+    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.55, Y_SCREEN*0.60, ALLEGRO_ALIGN_CENTER, "Voltar");
+    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.45, Y_SCREEN*0.60, ALLEGRO_ALIGN_CENTER, "Aplicar");
+    if(dificuldade == 0) al_draw_bitmap(check, coord0.x, coord0.y, 0);
+    if(dificuldade == 1) al_draw_bitmap(check, coord1.x, coord1.y, 0);
+    if(dificuldade == 2) al_draw_bitmap(check, coord2.x, coord2.y, 0);
 }
 
 void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FONT *font_base, int X_SCREEN, int Y_SCREEN, unsigned int resolucao, unsigned int tela_cheia){
@@ -287,7 +304,7 @@ void desenha_video(ALLEGRO_BITMAP *fundo_menu, ALLEGRO_BITMAP *check, ALLEGRO_FO
 }
 
 int desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle estruturas[], struct fundo fundo1, struct fundo fundo2, struct fundo fundo3, 
-    ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, ALLEGRO_BITMAP *sprite_bala[],
+    ALLEGRO_BITMAP *fundo0, ALLEGRO_BITMAP *sprite_sheet, ALLEGRO_BITMAP *sprite_inimigo, ALLEGRO_BITMAP *sprite_bala[], ALLEGRO_BITMAP *predio,
     unsigned int sprite, int distancia_andada, double velocidade, double delta, int MAX_OBSTACULOS,int X_SCREEN, int Y_SCREEN){
     
     int inimigos_mortos;
@@ -308,7 +325,7 @@ int desenha_jogo(struct boneco *personagem, struct arma *gun, struct obstacle es
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     al_draw_scaled_bitmap(fundo3.bitmap, 0, 0, al_get_bitmap_width(fundo3.bitmap), al_get_bitmap_height(fundo3.bitmap), X_SCREEN + fundo3.scroll_offset, 0, X_SCREEN, Y_SCREEN, 0);
     
-    inimigos_mortos = desenha_estruturas(sprite_inimigo, sprite_bala, estruturas, personagem, distancia_andada, sprite, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+    inimigos_mortos = desenha_estruturas(sprite_inimigo, sprite_bala, predio, estruturas, personagem, distancia_andada, sprite, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
     desenha_bala(gun, sprite_bala, distancia_andada, 0, sprite/5);
     if(!personagem->chao)
         desenha_boneco_pulando(sprite_sheet, *personagem, sprite/5);

@@ -132,24 +132,47 @@ void gera_estruturas(struct obstacle estruturas[], int vida, int MAX_OBSTACULOS,
     }
 }
 
-struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int vida, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+void reseta_estrutura(struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int vida, int MAX_OBSTACULOS, int Y_SCREEN){
     for(int i=1;i<MAX_OBSTACULOS;i++){
         if(estruturas[i].inimigo){
             destroi_arma(estruturas[i].enemy->gun);
             free(estruturas[i].enemy);
         } 
     }
+    *distancia_andada = 0;
+    *inimigos_mortos = 0;
+    gera_estruturas(estruturas, vida, MAX_OBSTACULOS, Y_SCREEN);
+}
+
+struct boneco reseta_game(struct boneco personagem, struct obstacle estruturas[], int *distancia_andada, int *inimigos_mortos, int *vida_max_boss, 
+    int *inimigos_a_matar, int dificuldade, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN){
+
     personagem.x = X_SCREEN/2;
     personagem.y = Y_SCREEN/2;
     personagem.velocidade_y = 0;
     personagem.chao = 1;
     personagem.vida = 3;
-    *distancia_andada = 0;
-    *inimigos_mortos = 0;
-    gera_estruturas(estruturas, vida, MAX_OBSTACULOS, Y_SCREEN);
+    if(dificuldade == 0){
+        reseta_estrutura(estruturas, distancia_andada, inimigos_mortos, 3, MAX_OBSTACULOS,  Y_SCREEN);
+        personagem.vida = 5;
+        *vida_max_boss = 100;
+        *inimigos_a_matar = 3;
+    }
+    if(dificuldade == 1){
+        reseta_estrutura(estruturas, distancia_andada, inimigos_mortos, 5, MAX_OBSTACULOS,  Y_SCREEN);
+        personagem.vida = 3;
+        *vida_max_boss = 200;
+        *inimigos_a_matar = 6;
+    }
+    if(dificuldade == 2){
+        reseta_estrutura(estruturas, distancia_andada, inimigos_mortos, 7, MAX_OBSTACULOS, Y_SCREEN);
+        personagem.vida = 1;
+        *vida_max_boss = 300;
+        *inimigos_a_matar = 10;
+    }
     return personagem;
 }
-
+    
 struct obstacle estrutura_boss_fight(int X_SCREEN, int Y_SCREEN){
     struct obstacle estrutura_boss;
     estrutura_boss.x1 = 0;
