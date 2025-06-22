@@ -83,6 +83,9 @@ int main(){
     fundo3.bitmap = al_load_bitmap("usaveis/6.png");
     verifica_init(fundo3.bitmap, "usaveis/6.png");
 
+    ALLEGRO_BITMAP *key_binds = al_load_bitmap("usaveis/key_binds.png");
+    verifica_init(key_binds, "usaveis/key_binds.png");
+
     ALLEGRO_BITMAP *predio = al_load_bitmap("usaveis/predio.png");
     verifica_init(predio, "usaveis/predio.png");
 
@@ -352,16 +355,20 @@ int main(){
                             tela = CONFIG;
                     break;
                     case DIFICULDADE:
-                    if(mouse_no_botao(font_base, "Fácil", X_SCREEN/2, Y_SCREEN*0.35, event.mouse.x, event.mouse.y))
-                        dificuldade = 0;
-                    if(mouse_no_botao(font_base, "Médio", X_SCREEN/2, Y_SCREEN*0.40, event.mouse.x, event.mouse.y))
-                        dificuldade = 1;
-                    if(mouse_no_botao(font_base, "Difícil", X_SCREEN/2, Y_SCREEN*0.45, event.mouse.x, event.mouse.y))
-                        dificuldade = 2;
-                    if(mouse_no_botao(font_base, "Voltar", X_SCREEN*0.55, Y_SCREEN*0.60, event.mouse.x, event.mouse.y)){
-                        personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
-                        tela = CONFIG;
-                    }
+                        if(mouse_no_botao(font_base, "Fácil", X_SCREEN/2, Y_SCREEN*0.35, event.mouse.x, event.mouse.y))
+                            dificuldade = 0;
+                        if(mouse_no_botao(font_base, "Médio", X_SCREEN/2, Y_SCREEN*0.40, event.mouse.x, event.mouse.y))
+                            dificuldade = 1;
+                        if(mouse_no_botao(font_base, "Difícil", X_SCREEN/2, Y_SCREEN*0.45, event.mouse.x, event.mouse.y))
+                            dificuldade = 2;
+                        if(mouse_no_botao(font_base, "Voltar", X_SCREEN*0.55, Y_SCREEN*0.60, event.mouse.x, event.mouse.y)){
+                            personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, &vida_max_boss, &inimigos_a_matar, dificuldade, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
+                            tela = CONFIG;
+                        }
+                    break;
+                    case CONTROLE:
+                        if(mouse_no_botao(font_base, "Voltar", X_SCREEN/2, Y_SCREEN*0.70, event.mouse.x, event.mouse.y))
+                            tela = CONFIG;
                     break;
                     case JOGO:
                         personagem.atirando = 1;
@@ -418,6 +425,8 @@ int main(){
                 break;
                 case CONTROLE:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
+                    al_draw_bitmap(key_binds, 0, 0, 0);
+                    al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.70, ALLEGRO_ALIGN_CENTER, "Voltar");
                 break;
                 case LOADING:
                     now_load = al_get_time();
