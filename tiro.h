@@ -28,7 +28,7 @@ void avança_bala(struct bala *bullet, int velocidade);
 
 void atualiza_lista(struct arma *gun, struct obstacle estruturas[], int velocidade, int distancia_andada, int MAX_OBSTACULOS, int X_SCREEN, int Y_SCREEN);
 
-void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int velocidade, int distancia_andada,int X_SCREEN, int Y_SCREEN);
+void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int velocidade, int distancia_andada, int largura_bala, int altura_bala, int X_SCREEN, int Y_SCREEN);
 
 void destroi_bala(struct bala *bullet);
 

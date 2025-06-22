@@ -107,8 +107,8 @@ void gera_estruturas(struct obstacle estruturas[], int vida, int MAX_OBSTACULOS,
     int x_inimigo;
     unsigned int inimigo;
     for(int i=1;i<MAX_OBSTACULOS;i++){
-        estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75);
-        estruturas[i].x2 = estruturas[i].x1 + 350 + rand() % (500);
+        estruturas[i].x1 = estruturas[i-1].x2 + 150 + rand() % (75); //distancia da última
+        estruturas[i].x2 = estruturas[i].x1 + 300 + rand() % (400); //largura da plataforma
         if (rand() % 2 == 0)
             altura = -125 + rand() % (51);   // -150 a -100 (inclusive)
         else
@@ -120,11 +120,11 @@ void gera_estruturas(struct obstacle estruturas[], int vida, int MAX_OBSTACULOS,
         else
             estruturas[i].y1 = estruturas[i-1].y1 + altura;
         estruturas[i].y2 = Y_SCREEN;
-        inimigo = rand() % 2; //aqui está 50%
+        inimigo = rand() % 4; //aqui está 75% de gerar um inimigo
         x_inimigo = estruturas[i].x1+20 + rand() % (estruturas[i].x2 - estruturas[i].x1 - 120);
         //printf("X Inimigo %d\n", x_inimigo);
         //printf("Inimigo %d\n", inimigo);
-        if(inimigo == 0){
+        if(inimigo != 0){
             estruturas[i].inimigo = 1;
             estruturas[i].enemy = gera_inimigo(x_inimigo, estruturas[i].y1-100, vida);
         }

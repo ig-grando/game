@@ -109,14 +109,14 @@ void atualiza_lista(struct arma *gun, struct obstacle estruturas[], int velocida
     }
 }
 
-void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int velocidade, int distancia_andada,int X_SCREEN, int Y_SCREEN){
+void atualiza_lista_inimigo(struct arma *gun, struct boneco *personagem, int velocidade, int distancia_andada, int largura_bala, int altura_bala, int X_SCREEN, int Y_SCREEN){
     struct bala *atual = gun->primeira_bala;
     struct bala *anterior = NULL;
     bool atinge_personagem;
     while(atual != NULL){
         avança_bala(atual, velocidade);
         atinge_personagem = colide_bala_x(personagem->x+distancia_andada, personagem->y, personagem->largura, personagem->altura, 
-            atual->x-5, atual->x+5, atual->y-5, atual->y+5);//5 é o raio
+            atual->x-largura_bala, atual->x+largura_bala, atual->y-altura_bala, atual->y+altura_bala);
         if(atual->x < 0+distancia_andada || atual->x > X_SCREEN+distancia_andada || atual->y < 0 || atual->y > Y_SCREEN || atinge_personagem){
             struct bala *remover = atual;
             if(anterior == NULL){ //primeira

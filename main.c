@@ -99,6 +99,14 @@ int main(){
     sprites_boss.atirando_cima = al_load_bitmap("usaveis/atira_alto.png");
     verifica_init(sprites_boss.atirando, "usaveis/atira_alto.png");
 
+    ALLEGRO_BITMAP *sprites_balas[4];
+    sprites_balas[0] = al_load_bitmap("usaveis/bala_0.png"); 
+    sprites_balas[1] = al_load_bitmap("usaveis/bala_1.png"); 
+    sprites_balas[2] = al_load_bitmap("usaveis/bala_2.png"); 
+    sprites_balas[3] = al_load_bitmap("usaveis/bala_3.png"); 
+    bool teste = sprites_balas[0] && sprites_balas[1] && sprites_balas[2] && sprites_balas[3];
+    verifica_init(teste, "balas");
+
 
     ALLEGRO_BITMAP *coracao_cheio = al_load_bitmap("usaveis/heart-full.png");
     verifica_init(coracao_cheio, "usaveis/heart-full.png");
@@ -143,7 +151,7 @@ int main(){
     int largura_total, largura_vida;
     int x_bala_boss, y_bala_boss;
     int estado_boss = ATAQUE_PAUSA, prox_estado_boss = ATAQUE_VERTICAL;
-    double tempo_boss=0;
+    double tempo_boss=3.0;
 
     struct obstacle estrutura_boss;
     struct obstacle estruturas[MAX_OBSTACULOS];
@@ -430,12 +438,12 @@ int main(){
                 break;
 
                 case JOGO:
-                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
+                    inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprites_balas, sprite, 
                         distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
                     //al_draw_filled_rectangle(personagem.x, personagem.y, personagem.x+personagem.largura, personagem.y-personagem.altura, al_map_rgb(255, 0, 0)); //marca x, y do boneco
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.01, Y_SCREEN*0.01, ALLEGRO_ALIGN_LEFT, "Objetivos:");
                     desenha_heart(coracao_cheio, personagem.vida, X_SCREEN, Y_SCREEN);
-                    if(inimigos_mortos < 1)
+                    if(inimigos_mortos < 6)
                         al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
                     else{
                         estrutura_boss = estrutura_boss_fight(X_SCREEN, Y_SCREEN);
@@ -461,7 +469,7 @@ int main(){
                 break;
 
                 case BOSS:
-                    desenha_boss_fight(gun, &personagem, final_boss, estrutura_boss, sprites_boss, fundo_menu, sprite_sheet,sprite, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
+                    desenha_boss_fight(gun, &personagem, final_boss, estrutura_boss, sprites_boss, sprites_balas, fundo_menu, sprite_sheet,sprite, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
                     al_draw_filled_rectangle(X_SCREEN*0.2, Y_SCREEN*0.95, X_SCREEN*0.8, Y_SCREEN*0.97, al_map_rgb(0, 0, 0)); //barra preta
 
                     largura_total = (X_SCREEN*0.775) - (X_SCREEN*0.225);
@@ -477,7 +485,7 @@ int main(){
                     tempo_boss-=delta;
                     if(estado_boss == ATAQUE_PAUSA){
                         if(tempo_boss <= 0){
-                            tempo_boss = 9.0;
+                            tempo_boss = 10.0;
                             estado_boss = prox_estado_boss;
                             final_boss->atirando = prox_estado_boss;
                         }
@@ -485,7 +493,7 @@ int main(){
                     if(estado_boss == ATAQUE_HORIZONTAL){
                         prox_estado_boss = ATAQUE_VERTICAL;
                         if(tempo_boss <= 0){
-                            tempo_boss = 5.0;
+                            tempo_boss = 4.5;
                             final_boss->atirando = ATAQUE_PAUSA;
                             estado_boss = ATAQUE_PAUSA;
                         }
@@ -493,7 +501,7 @@ int main(){
                     if(estado_boss == ATAQUE_VERTICAL){
                         prox_estado_boss = ATAQUE_HORIZONTAL;
                         if(tempo_boss <= 0){
-                            tempo_boss = 5.0;
+                            tempo_boss = 4.5;
                             final_boss->atirando = ATAQUE_PAUSA;
                             estado_boss = ATAQUE_PAUSA;
                         }
@@ -501,20 +509,24 @@ int main(){
                     if(personagem.atirando && gun->cooldown <= 0){
                         atirou(personagem.x, personagem.y, personagem.angulo, 0.2, gun);
                     }
+
                     final_boss->gun->cooldown -= delta;
                     if(final_boss->gun->cooldown <= 0 && final_boss->atirando == 1){ //sequência 1 do ataque
                         if (rand() % 2 == 0) y_bala_boss = -70 + rand() % (51); //gera valores acima ou abaixo de y 
                         else y_bala_boss = 20 + rand() % (51);
-                        atirou(final_boss->x, final_boss->y +y_bala_boss -35, 180, 0.75, final_boss->gun);
+                        atirou(final_boss->x, final_boss->y +y_bala_boss -35, 180, 0.715, final_boss->gun);
                     }
                     if(final_boss->gun->cooldown <= 0 && final_boss->atirando == 2){ //sequência 2 do ataque
                         x_bala_boss = rand() % (X_SCREEN - LARGURA_BOSS);
-                        atirou(x_bala_boss, 50, 90, 0.4, final_boss->gun); //coloco 1 para não ficar fora da tela
+                        atirou(x_bala_boss, 50, 90, 0.115, final_boss->gun); //coloco 1 para não ficar fora da tela
                     }
                     atualiza_lista_boss_fight(gun, final_boss, velocidade*delta*3, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
-                    atualiza_lista_inimigo(final_boss->gun, &personagem, velocidade*delta*1.2, 0, X_SCREEN, Y_SCREEN);
+                    atualiza_lista_inimigo(final_boss->gun, &personagem, velocidade*delta*1.2, 0, 16, 10, X_SCREEN, Y_SCREEN);
+
 
                     if(final_boss->vida <= 0){
+                        destroi_arma(final_boss->gun);
+                        free(final_boss);
                         personagem = reseta_game(personagem, estruturas, &distancia_andada, &inimigos_mortos, 5, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN);
                         distancia_andada = 0;
                         tela = VENCEU;
@@ -548,6 +560,13 @@ int main(){
     al_destroy_bitmap(fundo3.bitmap);
     al_destroy_bitmap(predio);
     al_destroy_bitmap(coracao_cheio);
+    al_destroy_bitmap(sprites_boss.parado);
+    al_destroy_bitmap(sprites_boss.atirando);
+    al_destroy_bitmap(sprites_boss.atirando_cima);
+    al_destroy_bitmap(sprites_balas[0]);
+    al_destroy_bitmap(sprites_balas[1]);
+    al_destroy_bitmap(sprites_balas[2]);
+    al_destroy_bitmap(sprites_balas[3]);
     al_destroy_bitmap(cursor);
     al_destroy_event_queue(fila);
     return 0;

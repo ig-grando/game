@@ -12,10 +12,8 @@ Polir um pouco:
     destruir bitmaps
     Transforamr os blocos cinzas na PNG do prédio.
     Animar inimigos
-    Colocar sprite na bala do personagem.
     Reduzir a hitbox do boneco para ele cair antes.
 
-Colocar o chefe
 Dificuldade(muda a vida e aumenta a quantidade de inimigos a matar)
 Fazer o makefile certo
 
@@ -36,6 +34,9 @@ Loading final(falso)
 Desenhar objetivos canto da tela
 Destruir inimigos não mortos
 Colocar corações boneco
+Colocar o chefe
+Colocar sprites balas do boss
+Colocar sprite na bala do personagem.
 
 Problemas consertados e como:
 

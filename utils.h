@@ -60,8 +60,6 @@ struct fundo{
 
 struct conjunto_sprites_boss{
     ALLEGRO_BITMAP *parado;
-    ALLEGRO_BITMAP *andando;
-    ALLEGRO_BITMAP *desliza;
     ALLEGRO_BITMAP *atirando;
     ALLEGRO_BITMAP *atirando_cima;
 };
