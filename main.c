@@ -6,9 +6,9 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 
-#include "utils.c"
-#include "menu.c"
-#include "tiro.c"
+#include "utils.h"
+#include "menu.h"
+#include "tiro.h"
 
 #define FPS 60.0
 
