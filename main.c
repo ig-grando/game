@@ -94,8 +94,10 @@ int main(){
 
     sprites_boss.parado = al_load_bitmap("usaveis/conjunto_parado.png");
     verifica_init(sprites_boss.parado, "usaveis/conjunto_parado.png");
-    sprites_boss.andando = al_load_bitmap("usaveis/andando.png");
-    verifica_init(sprites_boss.andando, "usaveis/andando.png");
+    sprites_boss.atirando = al_load_bitmap("usaveis/atira.png");
+    verifica_init(sprites_boss.atirando, "usaveis/atira.png");
+    sprites_boss.atirando_cima = al_load_bitmap("usaveis/atira_alto.png");
+    verifica_init(sprites_boss.atirando, "usaveis/atira_alto.png");
 
 
     ALLEGRO_BITMAP *coracao_cheio = al_load_bitmap("usaveis/heart-full.png");
@@ -137,7 +139,7 @@ int main(){
     //struct bala *bullet_aux;
 
     struct inimigo *final_boss;
-    int vida_max_boss = 100;
+    int vida_max_boss = 200;
     int largura_total, largura_vida;
     int x_bala_boss, y_bala_boss;
     int estado_boss = ATAQUE_PAUSA, prox_estado_boss = ATAQUE_VERTICAL;
@@ -426,6 +428,7 @@ int main(){
                     al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.50, ALLEGRO_ALIGN_CENTER, "Obrigado por jogar!");
                     al_draw_text(font_base, al_map_rgb(255, 255, 255), X_SCREEN/2, Y_SCREEN*0.60, ALLEGRO_ALIGN_CENTER, "Pressione ESCAPE para voltar ao MENU");
                 break;
+
                 case JOGO:
                     inimigos_mortos += desenha_jogo(&personagem, gun, estruturas, fundo1, fundo2, fundo3, fundo0, sprite_sheet, sprite_inimigo1, sprite, 
                         distancia_andada, velocidade, delta, MAX_OBSTACULOS, X_SCREEN, Y_SCREEN); //passei por referência para decrementar a vida.
@@ -436,7 +439,7 @@ int main(){
                         al_draw_textf(font_base, al_map_rgb(0, 0, 0), X_SCREEN*0.02, Y_SCREEN*0.04, ALLEGRO_ALIGN_LEFT, "- Mate %d inimigos", 6 - inimigos_mortos);
                     else{
                         estrutura_boss = estrutura_boss_fight(X_SCREEN, Y_SCREEN);
-                        final_boss = gera_inimigo(X_SCREEN*0.8, Y_SCREEN*0.9, 100);
+                        final_boss = gera_inimigo(X_SCREEN*0.8, Y_SCREEN*0.9, vida_max_boss);
                         tela = LOADING_2;
                         personagem.y = 100;
                         personagem.chao = 0;
@@ -458,7 +461,7 @@ int main(){
                 break;
 
                 case BOSS:
-                    desenha_boss(gun, &personagem, final_boss, estrutura_boss, sprites_boss, fundo_menu, sprite_sheet,sprite, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
+                    desenha_boss_fight(gun, &personagem, final_boss, estrutura_boss, sprites_boss, fundo_menu, sprite_sheet,sprite, ALTURA_BOSS, LARGURA_BOSS, X_SCREEN, Y_SCREEN);
                     al_draw_filled_rectangle(X_SCREEN*0.2, Y_SCREEN*0.95, X_SCREEN*0.8, Y_SCREEN*0.97, al_map_rgb(0, 0, 0)); //barra preta
 
                     largura_total = (X_SCREEN*0.775) - (X_SCREEN*0.225);
