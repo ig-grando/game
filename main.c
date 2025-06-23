@@ -425,7 +425,7 @@ int main(){
                 break;
                 case CONTROLE:
                     al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu), 0, 0, X_SCREEN, Y_SCREEN, 0);
-                    al_draw_bitmap(key_binds, 0, 0, 0);
+                    al_draw_scaled_bitmap(key_binds, 0, 0, 1920, 1080, 0, 0, X_SCREEN, Y_SCREEN, 0);
                     al_draw_text(font_base, al_map_rgb(0, 0, 0), X_SCREEN/2, Y_SCREEN*0.70, ALLEGRO_ALIGN_CENTER, "Voltar");
                 break;
                 case LOADING:
