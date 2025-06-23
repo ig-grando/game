@@ -578,6 +578,7 @@ int main(){
     al_destroy_bitmap(fundo2.bitmap);
     al_destroy_bitmap(fundo3.bitmap);
     al_destroy_bitmap(predio);
+    al_destroy_bitmap(key_binds);
     al_destroy_bitmap(coracao_cheio);
     al_destroy_bitmap(sprites_boss.parado);
     al_destroy_bitmap(sprites_boss.atirando);
