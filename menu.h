@@ -34,7 +34,7 @@ void desenha_boneco_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personag
 
 void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite);
 
-void desenha_inimigo_parado(ALLEGRO_BITMAP *sprite_sheet, int x, int y, bool atirando);
+void desenha_inimigo_parado(ALLEGRO_BITMAP *sprite_sheet, int x, int y, double atirando);
 
 void desenha_boneco_abaixado_andando(ALLEGRO_BITMAP *sprite_sheet, struct boneco personagem, int sprite);
 

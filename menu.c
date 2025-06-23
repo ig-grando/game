@@ -71,11 +71,11 @@ void desenha_boneco_parado(ALLEGRO_BITMAP *sprite_sheet, struct boneco personage
     
 }
 
-void desenha_inimigo_parado(ALLEGRO_BITMAP *sprite_sheet, int x, int y, bool atirando){
+void desenha_inimigo_parado(ALLEGRO_BITMAP *sprite_sheet, int x, int y, double cooldown){
     int ini= PIXEL*2;
     int ini2 = PIXEL*54;
     al_draw_scaled_bitmap(sprite_sheet, ini, ini, PIXEL*2, PIXEL*4, x, y-9, 70, 140, ALLEGRO_FLIP_HORIZONTAL);
-    if(atirando){
+    if(cooldown <= 0.5){
         al_draw_scaled_bitmap(sprite_sheet, ini, ini2, PIXEL*3, PIXEL*3, x-4*PIXEL-4, y-9+4 * PIXEL, 105, 70, ALLEGRO_FLIP_HORIZONTAL);
     }
     else
@@ -237,7 +237,7 @@ int desenha_estruturas(ALLEGRO_BITMAP *sprite_inimigo, ALLEGRO_BITMAP *sprite_ba
                 else{
                     temp->gun->cooldown -= delta;
                     desenha_bala(temp->gun, sprite_bala, distancia_andada, 1, sprite/5);
-                    desenha_inimigo_parado(sprite_inimigo, enemy_tela1, temp->y, temp->atirando);
+                    desenha_inimigo_parado(sprite_inimigo, enemy_tela1, temp->y, temp->gun->cooldown);
                     if(temp->gun->cooldown <= 0)
                         atirou(temp->x-20, temp->y+75, 180, 1.1, temp->gun);
                     atualiza_lista_inimigo(temp->gun, personagem, velocidade*delta*1.2, distancia_andada, 5, 5, X_SCREEN, Y_SCREEN);
